@@ -126,9 +126,10 @@ test('home is the default entry and empty home, overview and unknown areas do no
  }
 });
 
-test('home uses the compact ministry heading and territory map label',async()=>{
- const a=app('home');await a.flush();assert.equal(a.document.querySelector('.home-intro h1').textContent,'伝道を楽しもう');
- assert.equal(a.document.querySelector('.home-browse').textContent,'区域地図');assert.equal(a.document.querySelector('.home-intro p'),null);assert.equal(a.document.querySelector('.home-encouragement'),null);
+test('home groups its title and abbreviated scripture with the illustration and links to the overview',async()=>{
+ const a=app('home');await a.flush();const hero=a.document.querySelector('.kikyo-welcome');assert.equal(hero.querySelector('h1').textContent,'伝道を楽しもう');
+ assert.match(hero.querySelector('.home-scripture p').textContent,/そして毎日，…家から家へ/);assert.doesNotMatch(hero.querySelector('.home-scripture p').textContent,/神殿/);assert(hero.querySelector('svg'));
+ assert.equal(a.document.querySelector('.home-browse').textContent,'全体区域地図へ →');assert.equal(a.document.querySelector('.home-browse').getAttribute('href'),'?t=all');
 });
 
 test('opening a map persists one entry, sorts most recently opened first, and keeps QR destinations',async()=>{
