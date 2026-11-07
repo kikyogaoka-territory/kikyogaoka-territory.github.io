@@ -1,8 +1,8 @@
 /* Cache only app files, explicitly saved map tiles, and public map metadata. */
 importScripts('./offline-core.js');
-const VERSION='territory-shell-20261107-anonymous-share',META='territory-offline-meta-v1',PREFIX='territory-map-v1-';
+const VERSION='territory-shell-20261107-qr-reader',META='territory-offline-meta-v1',PREFIX='territory-map-v1-';
 const ROOT=new URL('./',self.location.href).href;
-const FILES=['./','index.html','improvements.css','territories.js','app-core.js','records.js','personal.js','public-visits.js','inline-share.js','offline.js','offline-core.js','offline.css','vendor/leaflet/leaflet.js','vendor/leaflet/leaflet.css','vendor/leaflet/images/layers.png','vendor/leaflet/images/layers-2x.png','vendor/leaflet/images/marker-icon.png','vendor/leaflet/images/marker-icon-2x.png','vendor/leaflet/images/marker-shadow.png'];
+const FILES=['./','index.html','improvements.css','territories.js','app-core.js','records.js','personal.js','qr-reader.js','qr-decoder.js','public-visits.js','inline-share.js','offline.js','offline-core.js','offline.css','vendor/leaflet/leaflet.js','vendor/leaflet/leaflet.css','vendor/leaflet/images/layers.png','vendor/leaflet/images/layers-2x.png','vendor/leaflet/images/marker-icon.png','vendor/leaflet/images/marker-icon-2x.png','vendor/leaflet/images/marker-shadow.png'];
 const ASSETS=new Set(FILES.map(p=>new URL(p,ROOT).pathname));
 const metaURL=id=>ROOT+'__offline/'+id;
 async function metadata(verify=false){const cache=await caches.open(META),keys=await cache.keys(),rows=[];for(const k of keys){try{const r=await (await cache.match(k)).json();if(!/^T\d{4,}$/.test(r.id)||!r.cache?.startsWith(PREFIX)||!Number.isInteger(r.count))continue;if(verify){if(!(await caches.keys()).includes(r.cache)||(await (await caches.open(r.cache)).keys()).length!==r.count)continue;}rows.push(r);}catch{}}return rows;}

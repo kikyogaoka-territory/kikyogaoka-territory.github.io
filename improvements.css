@@ -172,3 +172,23 @@
 #homeServiceMessage {margin:12px 0 0;font-size:16px;}
 #homeServiceMessage:empty {display:none;}
 .home-service-timer .home-active {margin-bottom:0;}
+
+.home-qr-entry {margin:20px 0;text-align:center;}
+#homeQR {width:100%;min-height:66px;border:0;border-radius:14px;padding:16px;background:#7060aa;color:white;font-size:23px;font-weight:700;cursor:pointer;}
+.home-qr-entry p {font-size:16px;color:#4a435e;margin:10px 0;}
+#qrReader {width:min(520px,calc(100% - 24px));max-height:92dvh;overflow:auto;padding:20px;border:0;border-radius:18px;color:#263b32;font-size:17px;}
+#qrReader::backdrop {background:#0009;}
+.qr-heading {display:flex;align-items:center;justify-content:space-between;gap:12px;}
+.qr-heading h2 {font-size:24px;margin:0;}
+#qrReader button {min-height:52px;border:1px solid #cdd7d0;border-radius:10px;padding:12px;font-size:17px;background:#f4f6f3;color:#263b32;cursor:pointer;}
+#qrReader #qrClose {min-width:56px;font-size:30px;line-height:1;}
+#qrVideo {display:block;width:100%;max-height:36dvh;background:#15221b;border:3px solid #7060aa;border-radius:12px;object-fit:cover;}
+#qrReader [hidden] {display:none!important;}
+#qrStatus {line-height:1.6;}
+#qrResult {padding:16px;background:#eff6ed;border-radius:12px;font-size:21px;font-weight:700;line-height:1.6;}
+#qrReader #qrGo {width:100%;background:#285b44;color:#fff;font-size:21px;font-weight:700;}
+.qr-alternatives {display:flex;flex-wrap:wrap;gap:10px;margin:16px 0;}
+.qr-alternatives button {flex:1;}
+#qrReader summary {padding:14px 0;cursor:pointer;}
+#qrReader label {display:block;line-height:1.6;}
+#qrLink {width:100%;margin:12px 0;font-size:16px;padding:10px;border:1px solid #abb7ad;border-radius:8px;}
