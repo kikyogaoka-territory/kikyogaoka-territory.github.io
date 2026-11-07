@@ -112,7 +112,7 @@ border-radius:6px;padding:8px;font-size:13px;font-weight:600;}
 .dnc-pin{width:24px;height:24px;border-radius:50%;background:#fff;border:2px solid #b23b3b;display:flex;align-items:center;justify-content:center;font-size:13px;box-shadow:0 1px 4px rgba(0,0,0,.4);}
 .toolbar button#btnDnc.active{background:#b23b3b;color:#fff;}
 </style>
-<link rel="stylesheet" href="improvements.css?v=20261107-qr-reader">
+<link rel="stylesheet" href="improvements.css?v=20261108-private-backup">
 <style>
 /* Kikyo personal dashboard: retain data and map status colors. */
 :root{--blue:#7060aa;--bar:#514482}body.home-view{background:#fcfbfe}.home-view header{background:#fff;color:#514482;border-bottom:1px solid #e7e2ef}.home-view header .no{background:#eee7fa;color:#7060aa}.home-view header .name{font-weight:700}#personalHome{background:#fcfbfe;color:#39334e}.home-content{max-width:1000px;padding-top:30px}.home-intro{margin-bottom:24px}.home-subtitle{font-size:13px;color:#81798e;margin:10px 0 0}.home-browse{background:#7060aa;border:0;border-bottom:4px solid #514482;color:#fff;border-radius:14px;padding:14px 20px;font-weight:700}.kikyo-welcome{display:flex;justify-content:space-between;align-items:center;height:185px;padding:24px 30px;border:1px solid #e1d6f2;border-radius:24px;background:#f0eafb;overflow:hidden;margin-bottom:22px}.kikyo-welcome>div{z-index:1}.kikyo-welcome span{font-size:11px;color:#7060aa;letter-spacing:2px}.kikyo-welcome h2{font-size:24px;margin:12px 0}.kikyo-welcome p{font-size:12px;color:#81798e;line-height:1.8}.kikyo-welcome svg{height:205px;width:240px;align-self:flex-end;margin-bottom:-24px}.home-summary{gap:16px;margin-bottom:25px}.home-summary button,.home-summary button+button{background:#fff;border:1px solid #e4dcef;border-bottom:3px solid #e1d6ee;border-radius:20px;color:#7060aa;padding:23px}.home-summary button>span{color:#81798e}.home-summary strong{font-size:29px}.home-summary small{font-size:11px}.home-search input{border-color:#e4dcef;border-radius:13px;margin-bottom:6px}.kikyo-section{background:white;border:1px solid #e7e2ef;border-radius:22px;padding:23px;margin:20px 0;scroll-margin-top:15px}.kikyo-section h2{font-size:18px;margin:0 0 15px}.kikyo-section h2>span{font-size:12px;color:#81798e;margin-left:8px}.home-map,.home-revisit{border-color:#e7e2ef;color:#39334e}.home-map-number{background:#f0eafa;color:#7060aa}.home-revisit{border-left-color:#aa96d1}.home-map-text .home-area-label,.home-arrow,.home-map-heading button{color:#81729d}.home-empty{border-color:#e1d6ee;color:#81798e;background:#fcfbfe}.home-month-summary{background:#f0eafa}.home-month input{border-color:#e4dcef;color:#514482}.kikyo-links{margin-top:25px}.kikyo-links .congregation-site{display:block;margin-top:12px}.home-settings{margin-top:18px}#personalHome button:focus-visible,#personalHome a:focus-visible{outline-color:#a28acb}
@@ -159,6 +159,7 @@ border-radius:6px;padding:8px;font-size:13px;font-weight:600;}
 <a id="btnHome" class="home-button" href="?t=home" title="ホーム" aria-label="ホーム"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m3 10 9-7 9 7M5 9v12h5v-7h4v7h5V9"/></svg></a>
 </header>
 <div id="notice">
+<p id="personalCloudStatus" class="personal-save-status" role="status" hidden></p>
 <details class="sync-panel"><summary id="syncSummary">共有情報を確認中…</summary><div id="syncDetails" aria-live="polite"></div><button id="syncRetry">再取得</button></details>
 <div class="revisit-bar" id="revisit"></div>
 </div>
@@ -171,6 +172,7 @@ border-radius:6px;padding:8px;font-size:13px;font-weight:600;}
 <button id="homeQR" type="button" onclick="QRReader.open()">▦ QRコードを読む</button>
 <p>区域・同行者の共有を、このアプリ内で開きます。</p>
 </section>
+<section id="cloudSetup" class="cloud-setup" hidden><p>初回だけ：復元カードを担当者と一緒に保管してください。</p><button type="button" onclick="PersonalCloud.openCard()">本人専用の復元カードを表示</button></section>
 <section class="home-service-timer" aria-label="奉仕時間の計測">
 <p id="homeServiceClock">再訪問・電話・手紙などの奉仕にも使えます。</p>
 <button id="homeServiceToggle" type="button">▶ 奉仕を始める</button>
@@ -198,9 +200,12 @@ border-radius:6px;padding:8px;font-size:13px;font-weight:600;}
 </details>
 </section>
 <details class="records-details kikyo-links"><summary>会衆サイト</summary><a id="congregationSite" class="congregation-site" href="https://sites.google.com/view/kikyogaoka/%E3%83%9B%E3%83%BC%E3%83%A0" target="_blank" rel="noopener noreferrer">桔梗が丘会衆サイト <span aria-hidden="true">↗</span><span class="visually-hidden">（別タブで開きます）</span></a>
-</details><details class="records-details home-settings"><summary>バックアップ・データの確認</summary>
+</details><details class="records-details home-settings"><summary>記録を守る</summary>
+<button class="cloud-open" type="button" onclick="PersonalCloud.open()">自動バックアップ・復元カードを確認</button>
+<p class="privacy-note">普段の記録は端末に自動保存し、通信時に本人専用の暗号化バックアップを作成します。個人メモと奉仕時間は同行者には共有しません。初回だけ、復元カードを担当者と一緒に保管してください。</p>
+<details><summary>ファイルで保存・復元（担当者向け）</summary>
 <p class="privacy-note">訪問記録・再訪問・奉仕時間・使った地図は、この端末に保存されます。</p>
-<div id="homeBackupTools"><div class="backup-tools"><button id="backupAll">全記録をバックアップ</button><button id="restoreAll">全記録を復元</button><input id="backupFile" type="file" accept="application/json" hidden><p id="backupStatus">定期的にバックアップしてください。</p></div></div><div id="homeSync"></div>
+<div id="homeBackupTools"><div class="backup-tools"><button id="backupAll">全記録をバックアップ</button><button id="restoreAll">全記録を復元</button><input id="backupFile" type="file" accept="application/json" hidden><p id="backupStatus">必要なときだけファイルに保存できます。</p></div></div></details><div id="homeSync"></div>
 </details>
 </div>
 </main>
@@ -310,7 +315,8 @@ border-radius:6px;padding:8px;font-size:13px;font-weight:600;}
 <script src="vendor/leaflet/leaflet.js"></script>
 <script src="territories.js?v=20261008-kuramochiB"></script>
 <script>(function(){try{if(window.L&&L.map&&!L.__ap){L.__ap=1;var o=L.map;L.map=function(){var m=o.apply(this,arguments);window.__LMAP=m;return m;};}}catch(e){}})();</script>
-<script src="app-core.js?v=20261107-service-timer"></script>
+<script src="backup-crypto.js?v=20261108-private-backup"></script>
+<script src="app-core.js?v=20261108-private-backup"></script>
 <script src="records.js?v=20261029-record-scope1"></script>
 <script src="personal.js?v=20261107-service-timer"></script>
 <script>
@@ -751,6 +757,18 @@ if(!ISHOME && !ISALL && window.TERRITORIES[TPARAM])Records.openLinked();
 <details><summary>共有リンクから開く</summary><label for="qrLink">コピーした区域・共有リンクを貼り付けてください。</label><textarea id="qrLink" rows="3" spellcheck="false" autocapitalize="off"></textarea><button id="qrPasteOpen" type="button">リンクを確認する</button></details>
 </dialog>
 <script src="qr-reader.js?v=20261107-qr-reader"></script>
+<dialog id="cloudDialog" aria-labelledby="cloudTitle">
+<div class="cloud-heading"><h2 id="cloudTitle">記録を守る</h2><button id="cloudClose" type="button" aria-label="記録を守る画面を閉じる">×</button></div>
+<p id="cloudDetail" role="status">端末に保存した記録を自動でバックアップします。</p><button id="cloudRetry" type="button">保存状態を確認する</button><button id="cloudKeepLocal" type="button" hidden>この端末の記録を保存先に残す（担当者と確認）</button>
+<h3>初回だけ：復元カードを保管</h3><p>故障や機種変更のときに使います。担当者と一緒に、スクリーンショットや紙で保管してください。</p><button id="cloudCardShow" type="button">本人専用の復元カードを表示</button>
+<section id="cloudCard" hidden><h3>桔梗が丘会衆 · 本人専用の復元カード</h3><canvas id="cloudCardQR" aria-label="本人専用の復元QRコード"></canvas><code id="cloudCardCode"></code><p>このカードで個人メモを含む記録を開けます。同行者への招待QRとは別です。他の方には渡さないでください。</p><button id="cloudCardKept" type="button">復元カードを保管しました</button></section>
+<details><summary>機種変更・以前の記録に戻す（担当者と操作）</summary>
+<p>復元する前に内容を確認します。今の端末の記録も残します。</p><button id="cloudOwnHistory" type="button">自分の以前の保存記録を確認</button>
+<label for="cloudCode">復元カードのコード、または復元リンク</label><textarea id="cloudCode" rows="3" spellcheck="false" autocapitalize="off"></textarea><button id="cloudReadCode" type="button">保存記録を確認</button>
+<div id="cloudHistory" hidden><label for="cloudVersion">戻す保存日時</label><select id="cloudVersion"></select></div><p id="cloudPreview" role="status"></p><button id="cloudRestore" type="button" hidden>この保存記録に戻す</button>
+<button id="cloudUndoRestore" type="button" hidden>この端末の復元前の記録に戻す</button>
+</details></dialog>
+<script src="personal-cloud.js?v=20261108-private-backup"></script>
 </body>
 </html>
 

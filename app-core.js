@@ -58,6 +58,7 @@ window.App = (() => {
   let undo=null;
   function notice(message){const n=document.getElementById('recordNotice');if(n){n.textContent=message;n.hidden=false;}}
   function showUndo(){const button=document.getElementById('undoBtn');if(button)button.disabled=!undo;}
+  function saved(){if(window.dispatchEvent&&window.CustomEvent)window.dispatchEvent(new window.CustomEvent('personal-records-saved'));}
   function store(k,v){
     let old;
     try{old=localStorage.getItem(k);if(recordKey(k)){validateEntry(k,v);if(old!==null)validateEntry(k,old);}localStorage.setItem(k,v);}
@@ -70,13 +71,14 @@ window.App = (() => {
       undo.after={[k]:v};
       showUndo();
     }
+    if(recordKey(k))saved();
   }
   // One cleanup spans houses and both kinds of room storage. Restore all keys on failure.
   function writeBatch(records){
     const before=Object.fromEntries(Object.keys(records).map(k=>[k,localStorage.getItem(k)])),written=[];
     try{for(const [k,v] of Object.entries(records)){if(v===null)localStorage.removeItem(k);else localStorage.setItem(k,v);written.push(k);}}
     catch(e){for(const k of written.reverse()){if(before[k]===null)localStorage.removeItem(k);else localStorage.setItem(k,before[k]);}throw e;}
-    return before;
+    saved();return before;
   }
   function storeBatch(records,expected){
     Object.entries(records).forEach(([k,v])=>validateEntry(k,v));
@@ -84,7 +86,7 @@ window.App = (() => {
     try{const before=writeBatch(records);if(Object.keys(before).length){undo={before,after:{...records},typing:false,time:Date.now()};showUndo();}}
     catch(e){notice('保存できませんでした。整理前の記録を保持しています。');throw e;}
   }
-  function remove(k){try{localStorage.removeItem(k);}catch(e){notice('記録を保存できませんでした。再度操作してください。');throw e;}}
+  function remove(k){try{localStorage.removeItem(k);if(recordKey(k))saved();}catch(e){notice('記録を保存できませんでした。再度操作してください。');throw e;}}
   function finishService(active,log){
     const raw=JSON.stringify(log);validateEntry('svc-log',raw);
     const current=localStorage.getItem('svc-active');
@@ -120,13 +122,21 @@ window.App = (() => {
     const records=validateBackup(data),before=backup().records;
     try{Object.entries(records).forEach(([k,v])=>localStorage.setItem(k,v));}
     catch(e){Object.keys(records).forEach(k=>{if(!(k in before))localStorage.removeItem(k);});Object.entries(before).forEach(([k,v])=>localStorage.setItem(k,v));throw e;}
+    saved();
+  }
+  function replaceBackup(data,expected,extras={}){
+    const records=validateBackup(data),current=backup().records,ordered=o=>JSON.stringify(Object.keys(o).sort().map(k=>[k,o[k]]));
+    if(ordered(current)!==ordered(expected))throw Error('確認中に記録が変わりました。もう一度確認してください。');
+    if(Object.keys(extras).some(k=>!['personal-cloud-state','personal-before-restore'].includes(k)))throw Error('復元設定を確認してください。');
+    const changes=Object.fromEntries(Object.keys(current).map(k=>[k,null]));
+    writeBatch({...changes,...records,...extras});undo=null;showUndo();
   }
   async function copy(text){
     try{await navigator.clipboard.writeText(text);alert('コピーしました。担当者が共有シートに貼り付けると反映されます。');return true;}
     catch(e){const sheet=document.getElementById('copySheet');document.getElementById('copyText').value=text;sheet.hidden=false;document.getElementById('copyText').select();return false;}
   }
   function tsvCell(value){const s=String(value).replace(/[\t\r\n]+/g,' ');if(/^[=+@-]/.test(s))return "'"+s;return s;}
-  const api={escape,coordinate,parseCSV,feed,feedStatus,store,storeBatch,notice,remove,finishService,serviceActive,startService,endService,serviceElapsed,backup,restore,validateBackup,validateEntry,validateHouses,validateApartments,validateRooms,download,copy,tsvCell,mode:null};
+  const api={escape,coordinate,parseCSV,feed,feedStatus,store,storeBatch,notice,remove,finishService,serviceActive,startService,endService,serviceElapsed,backup,restore,replaceBackup,validateBackup,validateEntry,validateHouses,validateApartments,validateRooms,download,copy,tsvCell,mode:null};
   document.addEventListener('DOMContentLoaded',()=>{
     document.body.insertAdjacentHTML('beforeend','<div id="recordNotice" role="alert" hidden></div><div id="copySheet" class="copy-sheet" hidden><div><p>自動コピーできませんでした。下の内容を選択してコピーしてください。</p><textarea id="copyText" aria-label="共有用の内容" readonly></textarea><button id="copyClose">閉じる</button></div></div>');
     const zoomTools=document.querySelector('.leaflet-top.leaflet-right');if(zoomTools)zoomTools.insertAdjacentHTML('beforeend','<div class="leaflet-control undo-control"><button id="undoBtn" type="button" disabled title="直前の記録を元に戻す" aria-label="直前の記録を元に戻す">↩</button></div>');
@@ -145,6 +155,7 @@ window.App = (() => {
     document.getElementById('restoreAll').onclick=()=>document.getElementById('backupFile').click();
     document.getElementById('backupFile').onchange=async e=>{const f=e.target.files[0];if(!f)return;try{const data=JSON.parse(await f.text());const records=validateBackup(data);if(!Object.keys(records).length)throw Error('記録がありません');if(!confirm('ファイルに含まれる区域・奉仕記録を置き換えます。現在の記録は先にバックアップしてください。復元しますか？'))return;restore(data);location.reload();}catch(err){alert('復元できませんでした。ファイル形式と端末の空き容量を確認してください。');}finally{e.target.value='';}};
     if(window.Personal)Personal.start();
+    if(window.PersonalCloud)PersonalCloud.mount();
   });
   return api;
 })();

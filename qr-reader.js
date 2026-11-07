@@ -10,6 +10,8 @@ window.QRReader=(()=>{
    ||source.origin===current.origin&&source.pathname===current.pathname;
   if(!approved||source.username||source.password)throw Error('このQRコードは区域地図のものではありません。');
   for(const name of ['t','s','k'])if(source.searchParams.getAll(name).length>1)throw Error('QRコードのリンクを確認してください。');
+  const recovery=new URLSearchParams(source.hash.slice(1)).get('restore');
+  if(recovery){const secret=BackupCrypto.parseCode(recovery),target=new URL('?t=home',current);target.hash=new URLSearchParams({restore:'KIKYO1-'+secret}).toString();return {url:target.href,name:'本人専用の復元カード',sharing:false,restoring:true};}
   const ref=source.searchParams.get('t'),territory=Territory.get(ref);
   if(!territory)throw Error('この区域はまだアプリに登録されていません。担当者に確認してください。');
   const id=source.searchParams.get('s'),token=source.searchParams.get('k'),sharing=id!==null||token!==null;
@@ -28,7 +30,7 @@ window.QRReader=(()=>{
  function accept(text){
   const result=resolve(text);pending=result;stopCamera();$('qrVideo').hidden=true;
   $('qrResult').textContent=result.name+(result.sharing?' · 同行者の共有に参加します':'');
-  $('qrResult').hidden=false;$('qrGo').hidden=false;say('読み取れました。区域を確認して開いてください。');return result;
+  $('qrResult').hidden=false;$('qrGo').hidden=false;$('qrGo').textContent=result.restoring?'復元する記録を確認 →':'この地図を開く →';say(result.restoring?'本人専用の復元カードです。まだ記録は変更していません。':'読み取れました。区域を確認して開いてください。');return result;
  }
  function decode(source,width,height,max){
   const scale=Math.min(1,max/Math.max(width,height)),canvas=$('qrCanvas');canvas.width=Math.round(width*scale);canvas.height=Math.round(height*scale);

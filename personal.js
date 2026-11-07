@@ -222,6 +222,7 @@ window.Personal = (() => {
     document.querySelector('header .no').textContent='✿ ききょう';document.querySelector('header .name').textContent='桔梗が丘会衆';
     document.getElementById('count').hidden=true;document.getElementById('btnHome').hidden=true;
     document.getElementById('personalHome').hidden=false;
+    const saveStatus=document.getElementById('personalCloudStatus');if(saveStatus)document.querySelector('.home-content').prepend(saveStatus);
     document.getElementById('homeSync').appendChild(document.querySelector('.sync-panel'));
     document.getElementById('homeMonth').value=Records.localDay().slice(0,7);
     document.getElementById('homeMonth').onchange=renderService;
