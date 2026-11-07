@@ -109,7 +109,7 @@ border-radius:6px;padding:8px;font-size:13px;font-weight:600;}
 .dnc-pin{width:24px;height:24px;border-radius:50%;background:#fff;border:2px solid #b23b3b;display:flex;align-items:center;justify-content:center;font-size:13px;box-shadow:0 1px 4px rgba(0,0,0,.4);}
 .toolbar button#btnDnc.active{background:#b23b3b;color:#fff;}
 </style>
-<link rel="stylesheet" href="improvements.css?v=20261004-review1">
+<link rel="stylesheet" href="improvements.css?v=20261107-service-timer">
 <style>
 /* Kikyo personal dashboard: retain data and map status colors. */
 :root{--blue:#7060aa;--bar:#514482}body.home-view{background:#fcfbfe}.home-view header{background:#fff;color:#514482;border-bottom:1px solid #e7e2ef}.home-view header .no{background:#eee7fa;color:#7060aa}.home-view header .name{font-weight:700}#personalHome{background:#fcfbfe;color:#39334e}.home-content{max-width:1000px;padding-top:30px}.home-intro{margin-bottom:24px}.home-subtitle{font-size:13px;color:#81798e;margin:10px 0 0}.home-browse{background:#7060aa;border:0;border-bottom:4px solid #514482;color:#fff;border-radius:14px;padding:14px 20px;font-weight:700}.kikyo-welcome{display:flex;justify-content:space-between;align-items:center;height:185px;padding:24px 30px;border:1px solid #e1d6f2;border-radius:24px;background:#f0eafb;overflow:hidden;margin-bottom:22px}.kikyo-welcome>div{z-index:1}.kikyo-welcome span{font-size:11px;color:#7060aa;letter-spacing:2px}.kikyo-welcome h2{font-size:24px;margin:12px 0}.kikyo-welcome p{font-size:12px;color:#81798e;line-height:1.8}.kikyo-welcome svg{height:205px;width:240px;align-self:flex-end;margin-bottom:-24px}.home-summary{gap:16px;margin-bottom:25px}.home-summary button,.home-summary button+button{background:#fff;border:1px solid #e4dcef;border-bottom:3px solid #e1d6ee;border-radius:20px;color:#7060aa;padding:23px}.home-summary button>span{color:#81798e}.home-summary strong{font-size:29px}.home-summary small{font-size:11px}.home-search input{border-color:#e4dcef;border-radius:13px;margin-bottom:6px}.kikyo-section{background:white;border:1px solid #e7e2ef;border-radius:22px;padding:23px;margin:20px 0;scroll-margin-top:15px}.kikyo-section h2{font-size:18px;margin:0 0 15px}.kikyo-section h2>span{font-size:12px;color:#81798e;margin-left:8px}.home-map,.home-revisit{border-color:#e7e2ef;color:#39334e}.home-map-number{background:#f0eafa;color:#7060aa}.home-revisit{border-left-color:#aa96d1}.home-map-text .home-area-label,.home-arrow,.home-map-heading button{color:#81729d}.home-empty{border-color:#e1d6ee;color:#81798e;background:#fcfbfe}.home-month-summary{background:#f0eafa}.home-month input{border-color:#e4dcef;color:#514482}.kikyo-links{margin-top:25px}.kikyo-links .congregation-site{display:block;margin-top:12px}.home-settings{margin-top:18px}#personalHome button:focus-visible,#personalHome a:focus-visible{outline-color:#a28acb}
@@ -164,7 +164,12 @@ border-radius:6px;padding:8px;font-size:13px;font-weight:600;}
 <div class="home-content">
 <div class="kikyo-welcome"><div class="home-hero-copy"><h1>伝道を楽しもう</h1><blockquote class="home-scripture"><p>そして毎日，…家から家へと行って教え，キリストであるイエスについての良い知らせを広め続けて，やめなかった。</p><cite>使徒 5:42</cite></blockquote></div><svg viewBox="0 0 340 300" aria-hidden="true"><circle cx="209" cy="119" r="90" fill="#e5dcf5"/><circle cx="256" cy="60" r="24" fill="#f8d977"/><path d="M0 244 Q105 165 340 205V300H0" fill="#dce5d3"/><path d="M0 282 Q161 212 340 257V300H0" fill="#c8d9bd"/><path d="M115 300 Q260 245 197 210 Q168 193 209 172" fill="none" stroke="#fff9e5" stroke-width="31"/><path d="M71 217V120M270 213V150" stroke="#81965c" stroke-width="8"/><ellipse cx="70" cy="111" rx="38" ry="51" fill="#7caa71"/><ellipse cx="274" cy="142" rx="29" ry="39" fill="#91b47b"/><path d="M148 155L186 125L222 155V196H148Z" fill="#fff9e9"/><path d="M138 155L185 116L232 155" fill="none" stroke="#d0a36d" stroke-width="10" stroke-linejoin="round"/><rect x="177" y="166" width="18" height="30" rx="3" fill="#9cba8a"/><rect x="156" y="161" width="12" height="12" rx="2" fill="#ebd48f"/><g transform="translate(112 188)"><ellipse cx="0" cy="62" rx="30" ry="7" fill="#aaa0bf" opacity=".2"/><path d="M-9 45L-16 59M10 45L18 59" stroke="#6c895a" stroke-width="6" stroke-linecap="round"/><ellipse cy="27" rx="21" ry="25" fill="#8eb378"/><path d="M-16 27Q-41 9 -34 34Q-24 42 -16 33M16 27Q35 6 37 23Q35 36 18 34" fill="#789e65"/><g transform="translate(0 -6) scale(1.15)"><path d="M0 4 C-19 -7 -16 -24 0 -38 C16 -24 19 -7 0 4Z" fill="#8b78ca" transform="rotate(0)"/><path d="M0 4 C-19 -7 -16 -24 0 -38 C16 -24 19 -7 0 4Z" fill="#9c88d5" transform="rotate(72)"/><path d="M0 4 C-19 -7 -16 -24 0 -38 C16 -24 19 -7 0 4Z" fill="#8470c3" transform="rotate(144)"/><path d="M0 4 C-19 -7 -16 -24 0 -38 C16 -24 19 -7 0 4Z" fill="#a591dd" transform="rotate(216)"/><path d="M0 4 C-19 -7 -16 -24 0 -38 C16 -24 19 -7 0 4Z" fill="#7762b5" transform="rotate(288)"/><circle r="17" fill="#c8b9ec"/><circle cx="-6" cy="-1" r="2.2" fill="#423657"/><circle cx="6" cy="-1" r="2.2" fill="#423657"/><ellipse cx="-11" cy="5" rx="3.5" ry="2" fill="#eaaecb"/><ellipse cx="11" cy="5" rx="3.5" ry="2" fill="#eaaecb"/><path d="M-4 6Q0 11 4 6" fill="none" stroke="#423657" stroke-width="2" stroke-linecap="round"/></g></g><path d="M305 236l4-15 5 15M37 256l4-14 5 14" fill="none" stroke="#6f985a" stroke-width="3"/><g fill="#fffdf0"><circle cx="44" cy="210" r="4"/><circle cx="290" cy="260" r="4"/></g></svg></div>
 <div class="home-intro"><p class="home-subtitle">自分の記録を、ここでひと目に。</p><a class="home-browse" href="?t=all">全体区域地図へ →</a></div>
+<section class="home-service-timer" aria-label="奉仕時間の計測">
+<p id="homeServiceClock">再訪問・電話・手紙などの奉仕にも使えます。</p>
+<button id="homeServiceToggle" type="button">▶ 奉仕を始める</button>
+<p id="homeServiceMessage" role="status"></p>
 <a id="homeActive" class="home-active" hidden></a>
+</section>
 <div class="home-summary">
 <button id="homeServiceShortcut" type="button"><span>今月の奉仕</span><strong id="homeMinutes">0分</strong><small>時間の記録を見る ↓</small></button>
 <button id="homeRevisitShortcut" type="button"><span>大切にしたい再訪問</span><strong><span id="homeRevisitCount">0</span><small> か所</small></strong><small>全区域から見る →</small></button>
@@ -250,7 +255,7 @@ border-radius:6px;padding:8px;font-size:13px;font-weight:600;}
 </div>
 </div>
 
-<button id="btnSvc" class="svc-pill">▶ 伝道スタート</button>
+<button id="btnSvc" class="svc-pill">▶ 奉仕を始める</button>
 <button id="btnOvList" class="ov-listbtn">📋 区域一覧</button>
 
 <div class="sheet" id="ovSheet">
@@ -298,9 +303,9 @@ border-radius:6px;padding:8px;font-size:13px;font-weight:600;}
 <script src="vendor/leaflet/leaflet.js"></script>
 <script src="territories.js?v=20261008-kuramochiB"></script>
 <script>(function(){try{if(window.L&&L.map&&!L.__ap){L.__ap=1;var o=L.map;L.map=function(){var m=o.apply(this,arguments);window.__LMAP=m;return m;};}}catch(e){}})();</script>
-<script src="app-core.js?v=20261019-offline1"></script>
+<script src="app-core.js?v=20261107-service-timer"></script>
 <script src="records.js?v=20261029-record-scope1"></script>
-<script src="personal.js?v=20261029-record-scope1"></script>
+<script src="personal.js?v=20261107-service-timer"></script>
 <script>
 const REQUEST_LEDGER='https://kikyogaoka-companions.balmy-titan-5521.chatgpt.site/report';
 const TERR_REF = (new URLSearchParams(location.search).get('t')||'home');
@@ -562,51 +567,27 @@ document.getElementById('done').onclick=function(e){if(e.target===this)this.styl
 function refreshMap(){ setTimeout(function(){ map.invalidateSize(); }, 60); }
 
 // ---- 伝道スタート/終了（奉仕記録：日付・時間帯・所要時間。端末内・個人通算、区域番号タグ付き）----
-const SVC_LOG='svc-log', SVC_ACTIVE='svc-active';
-function svcLoad(){ try{return JSON.parse(localStorage.getItem(SVC_LOG))||[]}catch(e){return []} }
-function svcSave(a){ App.store(SVC_LOG, JSON.stringify(a)); }
-function svcActive(){ try{return JSON.parse(localStorage.getItem(SVC_ACTIVE))||null}catch(e){return null} }
-function svcSetActive(o){ if(o){App.store(SVC_ACTIVE,JSON.stringify(o));} else {App.remove(SVC_ACTIVE);} }
-function pad2(n){ return (n<10?'0':'')+n; }
-function ymd(ms){ const d=new Date(ms); return d.getFullYear()+'-'+pad2(d.getMonth()+1)+'-'+pad2(d.getDate()); }
-const SVC_WD=['日','月','火','水','木','金','土'];
-function fmtDate(ms){ const d=new Date(ms); return (d.getMonth()+1)+'/'+d.getDate()+'('+SVC_WD[d.getDay()]+')'; }
-function fmtTime(ms){ const d=new Date(ms); return d.getHours()+':'+pad2(d.getMinutes()); }
 function fmtDur(min){ const h=Math.floor(min/60), m=min%60; return (h>0?h+'時間':'')+m+'分'; }
-function elapsed(ms){ let s=Math.floor((Date.now()-ms)/1000); const h=Math.floor(s/3600); s-=h*3600; const m=Math.floor(s/60); s-=m*60; return h+':'+pad2(m)+':'+pad2(s); }
-
 const svcBtn=document.getElementById('btnSvc');
-let svcTimer=null;
 function svcPaint(){
-  const a=svcActive();
-  if(a){
-    svcBtn.classList.add('running');
-    svcBtn.textContent='■ 伝道終了 ・ '+elapsed(a.start);
-    if(!svcTimer) svcTimer=setInterval(svcPaint,1000);
-  } else {
-    svcBtn.classList.remove('running');
-    svcBtn.textContent='▶ 伝道スタート';
-    if(svcTimer){ clearInterval(svcTimer); svcTimer=null; }
-  }
+  try{
+    const active=App.serviceActive();svcBtn.disabled=false;
+    svcBtn.classList.toggle('running',!!active);
+    svcBtn.textContent=active?'■ 奉仕を終える ・ '+App.serviceElapsed(active.start):'▶ 奉仕を始める';
+    svcBtn.setAttribute('aria-label',svcBtn.textContent);
+  }catch(e){svcBtn.disabled=true;svcBtn.textContent='計測記録を確認してください';App.notice('計測中の記録を読み込めませんでした。元の記録は保持しています。');}
 }
 svcBtn.onclick=function(){
-  const a=svcActive();
-  if(!a){
-    svcSetActive({start:Date.now(), terr:TPARAM});
-    svcPaint();
-  } else {
-    const end=Date.now();
-    const min=Math.max(1, Math.round((end-a.start)/60000));
-    const log=svcLoad();
-    log.push({id:Date.now(), date:ymd(a.start), start:a.start, end:end, min:min, terr:a.terr||TPARAM});
-    try{App.finishService(a,log);}catch(e){alert('奉仕時間を保存できませんでした。'+e.message);return;}
-    svcPaint();
-    showDone(min);
-  }
+  try{
+    if(App.serviceActive()){
+      const entry=App.endService();svcPaint();showDone(entry.min);
+    }else{App.startService(TPARAM);svcPaint();}
+  }catch(e){alert('奉仕時間を記録できませんでした。'+e.message);svcPaint();}
 };
-
-
-svcPaint();
+svcPaint();setInterval(svcPaint,1000);
+window.addEventListener('storage',svcPaint);
+window.addEventListener('focus',svcPaint);
+document.addEventListener('visibilitychange',()=>{if(!document.hidden)svcPaint();});
 
 render();
 showRevisit();
@@ -738,7 +719,7 @@ if(!ISHOME && !ISALL && window.TERRITORIES[TPARAM])Records.openLinked();
 <div><dt><span>🗺️</span>全体図</dt><dd>区域全体の配置を見たり、別の区域を探したりできます。</dd></div>
 <div><dt><span>↩</span>元に戻す</dt><dd>拡大・縮小ボタンの下にあります。直前の記録変更を元に戻します。</dd></div>
 <div><dt><span>＋ −</span>拡大・縮小</dt><dd>地図を拡大・縮小します。指で広げたり縮めたりしても操作できます。</dd></div>
-<div><dt><span>▶</span>伝道スタート</dt><dd>奉仕時間の計測を始めます。終了するときも同じボタンを押します。</dd></div>
+<div><dt><span>▶</span>奉仕を始める</dt><dd>ホームと地図で同じ奉仕時間を計測します。「奉仕を終える」を押すと保存されます。</dd></div>
 </dl>
 <p class="menu-help-intro">家・建物の追加や報告の位置選択は、同じアイコンをもう一度押すと終了できます。</p>
 <form method="dialog"><button class="menu-help-close" type="submit">閉じる</button></form>

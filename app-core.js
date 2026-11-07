@@ -13,7 +13,7 @@ window.App = (() => {
     if(k==='map-history-hidden'){check(Array.isArray(v));const seen=new Set();v.forEach(x=>{check(typeof x==='string' && /^(?:\d+(?:-\d+){0,2}|T\d{4,})$/.test(x) && !seen.has(x));seen.add(x);});}
     else if(k==='map-history'){check(Array.isArray(v));const seen=new Set();v.forEach(x=>{check(x && typeof x.terr==='string' && /^(?:\d+(?:-\d+){0,2}|T\d{4,})$/.test(x.terr) && !seen.has(x.terr) && typeof x.name==='string' && (x.lastOpened===null || (Number.isFinite(x.lastOpened) && x.lastOpened>=0 && Number.isFinite(new Date(x.lastOpened).getTime()))));seen.add(x.terr);});}
     else if(k==='svc-log'){ check(Array.isArray(v)); v.forEach(x=>check(x && Number.isFinite(x.id) && Number.isFinite(x.start) && Number.isFinite(x.end) && x.end>=x.start && Number.isFinite(x.min) && x.min>=0 && typeof x.date==='string' && (!x.terr || /^(?:\d+(?:-\d+){0,2}|T\d{4,})$/.test(x.terr)))); }
-    else if(k==='svc-active'){ check(v===null || (Number.isFinite(v.start) && /^(?:\d+(?:-\d+){0,2}|T\d{4,})$/.test(v.terr))); }
+    else if(k==='svc-active'){ check(v===null || (Number.isFinite(v.start) && (v.terr===null || /^(?:\d+(?:-\d+){0,2}|T\d{4,})$/.test(v.terr)))); }
     else if(k.endsWith('-shared-records')){ check(v && typeof v==='object' && !Array.isArray(v)); Object.entries(v).forEach(([id,rooms])=>{check(!['__proto__','constructor','prototype'].includes(id));validateRooms(rooms);}); }
     else if(k.endsWith('-apt')) validateApartments(v); else validateHouses(v);
   }
@@ -92,6 +92,27 @@ window.App = (() => {
     const old=localStorage.getItem('svc-log');if(old!==null)validateEntry('svc-log',old);
     try{writeBatch({'svc-log':raw,'svc-active':null});}catch(e){notice('奉仕時間を保存できませんでした。記録を保持しているので、もう一度終了してください。');throw e;}
   }
+  function serviceActive(){
+    const raw=localStorage.getItem('svc-active');
+    if(raw===null)return null;
+    validateEntry('svc-active',raw);return JSON.parse(raw);
+  }
+  function startService(terr=null){
+    const active=serviceActive();if(active)return active;
+    const next={start:Date.now(),terr};store('svc-active',JSON.stringify(next));return next;
+  }
+  function endService(){
+    const active=serviceActive();if(!active)return null;
+    const raw=localStorage.getItem('svc-log')||'[]';validateEntry('svc-log',raw);
+    const end=Date.now();if(end<active.start)throw Error('端末の時刻を確認してください。計測中の記録は保持しています。');
+    const d=new Date(active.start),pad=n=>String(n).padStart(2,'0');
+    const entry={id:end,date:d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate()),start:active.start,end,min:Math.max(1,Math.round((end-active.start)/60000)),terr:active.terr};
+    const log=JSON.parse(raw);log.push(entry);finishService(active,log);return entry;
+  }
+  function serviceElapsed(start){
+    const seconds=Math.max(0,Math.floor((Date.now()-start)/1000)),pad=n=>String(n).padStart(2,'0');
+    return Math.floor(seconds/3600)+':'+pad(Math.floor(seconds/60)%60)+':'+pad(seconds%60);
+  }
   function download(name,data){const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000);}
   function backup(){const records={};for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i);if(recordKey(k))records[k]=localStorage.getItem(k);}return {format:'territory-backup',version:1,createdAt:new Date().toISOString(),records};}
   function validateBackup(data){check(data && data.format==='territory-backup' && data.version===1 && data.records && typeof data.records==='object' && !Array.isArray(data.records));Object.entries(data.records).forEach(([k,v])=>validateEntry(k,v));return data.records;}
@@ -105,7 +126,7 @@ window.App = (() => {
     catch(e){const sheet=document.getElementById('copySheet');document.getElementById('copyText').value=text;sheet.hidden=false;document.getElementById('copyText').select();return false;}
   }
   function tsvCell(value){const s=String(value).replace(/[\t\r\n]+/g,' ');if(/^[=+@-]/.test(s))return "'"+s;return s;}
-  const api={escape,coordinate,parseCSV,feed,feedStatus,store,storeBatch,notice,remove,finishService,backup,restore,validateBackup,validateEntry,validateHouses,validateApartments,validateRooms,download,copy,tsvCell,mode:null};
+  const api={escape,coordinate,parseCSV,feed,feedStatus,store,storeBatch,notice,remove,finishService,serviceActive,startService,endService,serviceElapsed,backup,restore,validateBackup,validateEntry,validateHouses,validateApartments,validateRooms,download,copy,tsvCell,mode:null};
   document.addEventListener('DOMContentLoaded',()=>{
     document.body.insertAdjacentHTML('beforeend','<div id="recordNotice" role="alert" hidden></div><div id="copySheet" class="copy-sheet" hidden><div><p>自動コピーできませんでした。下の内容を選択してコピーしてください。</p><textarea id="copyText" aria-label="共有用の内容" readonly></textarea><button id="copyClose">閉じる</button></div></div>');
     const zoomTools=document.querySelector('.leaflet-top.leaflet-right');if(zoomTools)zoomTools.insertAdjacentHTML('beforeend','<div class="leaflet-control undo-control"><button id="undoBtn" type="button" disabled title="直前の記録を元に戻す" aria-label="直前の記録を元に戻す">↩</button></div>');

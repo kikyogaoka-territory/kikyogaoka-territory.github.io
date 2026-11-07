@@ -162,3 +162,13 @@
 .records-home-note {font-size:14px;line-height:1.7;color:#52616e;margin:20px 0 8px;}
 .records-home-link {display:flex;align-items:center;justify-content:center;min-height:44px;padding:8px 14px;border:1px solid #cadbd2;border-radius:10px;background:#f2f8f4;color:#245543;text-decoration:none;font-size:16px;font-weight:600;}
 .home-service-delete {flex:0 0 auto;min-width:44px;min-height:44px;border:1px solid #e4c9c2;border-radius:8px;background:#fff8f6;color:#9a4938;font-size:13px;cursor:pointer;}
+
+/* One shared clock for map visits and other ministry. */
+.home-service-timer {margin:20px 0;padding:20px;border:1px solid #cdded2;border-radius:18px;background:#fff;text-align:center;}
+#homeServiceClock {margin:0 0 14px;font-size:18px;color:#254c3c;font-variant-numeric:tabular-nums;}
+#homeServiceToggle {width:100%;min-height:64px;padding:16px;border:0;border-radius:12px;background:#285b44;color:white;font-size:22px;font-weight:700;cursor:pointer;}
+#homeServiceToggle.running {background:#8e4435;}
+#homeServiceToggle:disabled {opacity:.65;cursor:default;}
+#homeServiceMessage {margin:12px 0 0;font-size:16px;}
+#homeServiceMessage:empty {display:none;}
+.home-service-timer .home-active {margin-bottom:0;}

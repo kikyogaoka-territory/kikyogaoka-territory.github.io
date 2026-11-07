@@ -30,7 +30,7 @@ window.Personal = (() => {
     const add=t=>{if(/^(?:\d+(?:-\d+){0,2}|T\d{4,})$/.test(t) && !hidden.has(t) && !byId.has(t))byId.set(t,{terr:t,name:territoryName(t),lastOpened:null});};
     for(const [t,a] of scan())if(a.houses.length || a.local.length || Object.values(a.saved).some(r=>r.length))add(t);
     for(const log of safeRead('svc-log',[]))if(log.terr)add(String(log.terr));
-    const active=safeRead('svc-active',null);if(active)add(String(active.terr));
+    const active=safeRead('svc-active',null);if(active?.terr)add(String(active.terr));
     if(openTerr && known(openTerr)){hidden.delete(openTerr);byId.set(openTerr,{terr:openTerr,name:territoryName(openTerr),lastOpened:Date.now()});}
     const rows=[...byId.values()];
     if(JSON.stringify(old)!==JSON.stringify(rows))App.store(HISTORY,JSON.stringify(rows));
@@ -144,7 +144,7 @@ window.Personal = (() => {
     document.getElementById('homeMinutes').textContent=duration(current.reduce((sum,x)=>sum+x.min,0));
     document.getElementById('homeMonthSummary').textContent=new Set(monthly.map(x=>x.date)).size+'日 · 合計 '+duration(monthly.reduce((sum,x)=>sum+x.min,0));
     const host=document.getElementById('homeService');host.replaceChildren();
-    if(!monthly.length)empty(host,'この月の奉仕時間はまだありません。地図の「伝道スタート」から記録できます。');
+    if(!monthly.length)empty(host,'この月の奉仕時間はまだありません。「奉仕を始める」から記録できます。');
     for(const x of monthly){
       const row=el('div','home-service-row');
       const text=el('span','home-map-text');text.appendChild(el('strong','',Records.displayDate(x.date)));
@@ -160,8 +160,28 @@ window.Personal = (() => {
         }catch(e){alert('奉仕時間を削除できませんでした。'+e.message);}
       };row.appendChild(remove);host.appendChild(row);
     }
-    const active=safeRead('svc-active',null),resume=document.getElementById('homeActive');resume.hidden=!active;
-    if(active){resume.href=mapLink(active.terr);resume.textContent='● 区域 '+Territory.number(active.terr)+' で伝道中 · 地図に戻る →';}
+    paintServiceTimer();
+  }
+  function paintServiceTimer(){
+    const button=document.getElementById('homeServiceToggle'),clock=document.getElementById('homeServiceClock'),resume=document.getElementById('homeActive');
+    try{
+      const active=App.serviceActive();button.disabled=false;button.classList.toggle('running',!!active);
+      button.textContent=active?'■ 奉仕を終える':'▶ 奉仕を始める';
+      clock.textContent=active?'計測中 '+App.serviceElapsed(active.start):'再訪問・電話・手紙などの奉仕にも使えます。';
+      resume.hidden=!active?.terr;
+      if(active?.terr){resume.href=mapLink(active.terr);resume.textContent='区域 '+Territory.number(active.terr)+' の地図に戻る →';}
+    }catch(e){button.disabled=true;clock.textContent='計測中の記録を読み込めませんでした。元の記録は保持しています。';resume.hidden=true;}
+  }
+  function toggleService(){
+    try{
+      if(App.serviceActive()){
+        const entry=App.endService();
+        document.getElementById('homeServiceMessage').textContent='お疲れさまでした。今回の奉仕 '+duration(entry.min)+'を保存しました。';
+        renderService();
+      }else{
+        App.startService();document.getElementById('homeServiceMessage').textContent='奉仕時間の計測を始めました。';paintServiceTimer();
+      }
+    }catch(e){alert('奉仕時間を記録できませんでした。'+e.message);paintServiceTimer();}
   }
   function serviceResetPlan(scope,month){
     if(!['month','all','timer'].includes(scope))throw Error('リセットの対象を確認してください。');
@@ -205,6 +225,10 @@ window.Personal = (() => {
     document.getElementById('homeSync').appendChild(document.querySelector('.sync-panel'));
     document.getElementById('homeMonth').value=Records.localDay().slice(0,7);
     document.getElementById('homeMonth').onchange=renderService;
+    document.getElementById('homeServiceToggle').onclick=toggleService;
+    setInterval(paintServiceTimer,1000);
+    window.addEventListener('focus',paintServiceTimer);
+    document.addEventListener('visibilitychange',()=>{if(!document.hidden)paintServiceTimer();});
     document.getElementById('homeResetMonth').onclick=()=>requestServiceReset('month');
     document.getElementById('homeResetService').onclick=()=>requestServiceReset('all');
     document.getElementById('homeResetTimer').onclick=()=>requestServiceReset('timer');
