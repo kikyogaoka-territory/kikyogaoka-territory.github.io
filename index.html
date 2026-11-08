@@ -172,7 +172,6 @@ border-radius:6px;padding:8px;font-size:13px;font-weight:600;}
 <button id="homeQR" type="button" onclick="QRReader.open()">▦ QRコードを読む</button>
 <p>区域・同行者の共有を、このアプリ内で開きます。</p>
 </section>
-<section id="cloudSetup" class="cloud-setup" hidden><p>初回だけ：復元カードを担当者と一緒に保管してください。</p><button type="button" onclick="PersonalCloud.openCard()">本人専用の復元カードを表示</button></section>
 <section class="home-service-timer" aria-label="奉仕時間の計測">
 <p id="homeServiceClock">再訪問・電話・手紙などの奉仕にも使えます。</p>
 <button id="homeServiceToggle" type="button">▶ 奉仕を始める</button>
@@ -202,7 +201,7 @@ border-radius:6px;padding:8px;font-size:13px;font-weight:600;}
 <details class="records-details kikyo-links"><summary>会衆サイト</summary><a id="congregationSite" class="congregation-site" href="https://sites.google.com/view/kikyogaoka/%E3%83%9B%E3%83%BC%E3%83%A0" target="_blank" rel="noopener noreferrer">桔梗が丘会衆サイト <span aria-hidden="true">↗</span><span class="visually-hidden">（別タブで開きます）</span></a>
 </details><details class="records-details home-settings"><summary>記録を守る</summary>
 <button class="cloud-open" type="button" onclick="PersonalCloud.open()">自動バックアップ・復元カードを確認</button>
-<p class="privacy-note">普段の記録は端末に自動保存し、通信時に本人専用の暗号化バックアップを作成します。個人メモと奉仕時間は同行者には共有しません。初回だけ、復元カードを担当者と一緒に保管してください。</p>
+<p class="privacy-note">普段の記録は端末に自動保存し、通信時に本人専用の暗号化バックアップを作成します。個人メモと奉仕時間は同行者には共有しません。記録を守るため、本人専用の復元カードを保管してください。</p>
 <details><summary>ファイルで保存・復元（担当者向け）</summary>
 <p class="privacy-note">訪問記録・再訪問・奉仕時間・使った地図は、この端末に保存されます。</p>
 <div id="homeBackupTools"><div class="backup-tools"><button id="backupAll">全記録をバックアップ</button><button id="restoreAll">全記録を復元</button><input id="backupFile" type="file" accept="application/json" hidden><p id="backupStatus">必要なときだけファイルに保存できます。</p></div></div></details><div id="homeSync"></div>
@@ -760,7 +759,7 @@ if(!ISHOME && !ISALL && window.TERRITORIES[TPARAM])Records.openLinked();
 <dialog id="cloudDialog" aria-labelledby="cloudTitle">
 <div class="cloud-heading"><h2 id="cloudTitle">記録を守る</h2><button id="cloudClose" type="button" aria-label="記録を守る画面を閉じる">×</button></div>
 <p id="cloudDetail" role="status">端末に保存した記録を自動でバックアップします。</p><button id="cloudRetry" type="button">保存状態を確認する</button><button id="cloudKeepLocal" type="button" hidden>この端末の記録を保存先に残す（担当者と確認）</button>
-<h3>初回だけ：復元カードを保管</h3><p>故障や機種変更のときに使います。担当者と一緒に、スクリーンショットや紙で保管してください。</p><button id="cloudCardShow" type="button">本人専用の復元カードを表示</button>
+<h3>復元カードを保管</h3><p>故障や機種変更のときに使います。スクリーンショットや紙で、ご本人が大切に保管してください。このカードで個人記録を復元できるため、他の人には共有しないでください。</p><button id="cloudCardShow" type="button">本人専用の復元カードを表示</button>
 <section id="cloudCard" hidden><h3>桔梗が丘会衆 · 本人専用の復元カード</h3><canvas id="cloudCardQR" aria-label="本人専用の復元QRコード"></canvas><code id="cloudCardCode"></code><p>このカードで個人メモを含む記録を開けます。同行者への招待QRとは別です。他の方には渡さないでください。</p><button id="cloudCardKept" type="button">復元カードを保管しました</button></section>
 <details><summary>機種変更・以前の記録に戻す（担当者と操作）</summary>
 <p>復元する前に内容を確認します。今の端末の記録も残します。</p><button id="cloudOwnHistory" type="button">自分の以前の保存記録を確認</button>
@@ -768,7 +767,7 @@ if(!ISHOME && !ISALL && window.TERRITORIES[TPARAM])Records.openLinked();
 <div id="cloudHistory" hidden><label for="cloudVersion">戻す保存日時</label><select id="cloudVersion"></select></div><p id="cloudPreview" role="status"></p><button id="cloudRestore" type="button" hidden>この保存記録に戻す</button>
 <button id="cloudUndoRestore" type="button" hidden>この端末の復元前の記録に戻す</button>
 </details></dialog>
-<script src="personal-cloud.js?v=20261108-private-backup"></script>
+<script src="personal-cloud.js?v=20261108-backup-menu"></script>
 </body>
 </html>
 
