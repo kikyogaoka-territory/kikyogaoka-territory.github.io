@@ -112,7 +112,7 @@ border-radius:6px;padding:8px;font-size:13px;font-weight:600;}
 .dnc-pin{width:24px;height:24px;border-radius:50%;background:#fff;border:2px solid #b23b3b;display:flex;align-items:center;justify-content:center;font-size:13px;box-shadow:0 1px 4px rgba(0,0,0,.4);}
 .toolbar button#btnDnc.active{background:#b23b3b;color:#fff;}
 </style>
-<link rel="stylesheet" href="improvements.css?v=20261111-visit-posted">
+<link rel="stylesheet" href="improvements.css?v=20261111-visit-pins">
 <style>
 /* Kikyo personal dashboard: retain data and map status colors. */
 :root{--blue:#7060aa;--bar:#514482}body.home-view{background:#fcfbfe}.home-view header{background:#fff;color:#514482;border-bottom:1px solid #e7e2ef}.home-view header .no{background:#eee7fa;color:#7060aa}.home-view header .name{font-weight:700}#personalHome{background:#fcfbfe;color:#39334e}.home-content{max-width:1000px;padding-top:30px}.home-intro{margin-bottom:24px}.home-subtitle{font-size:13px;color:#81798e;margin:10px 0 0}.home-browse{background:#7060aa;border:0;border-bottom:4px solid #514482;color:#fff;border-radius:14px;padding:14px 20px;font-weight:700}.kikyo-welcome{display:flex;justify-content:space-between;align-items:center;height:185px;padding:24px 30px;border:1px solid #e1d6f2;border-radius:24px;background:#f0eafb;overflow:hidden;margin-bottom:22px}.kikyo-welcome>div{z-index:1}.kikyo-welcome span{font-size:11px;color:#7060aa;letter-spacing:2px}.kikyo-welcome h2{font-size:24px;margin:12px 0}.kikyo-welcome p{font-size:12px;color:#81798e;line-height:1.8}.kikyo-welcome svg{height:205px;width:240px;align-self:flex-end;margin-bottom:-24px}.home-summary{gap:16px;margin-bottom:25px}.home-summary button,.home-summary button+button{background:#fff;border:1px solid #e4dcef;border-bottom:3px solid #e1d6ee;border-radius:20px;color:#7060aa;padding:23px}.home-summary button>span{color:#81798e}.home-summary strong{font-size:29px}.home-summary small{font-size:11px}.home-search input{border-color:#e4dcef;border-radius:13px;margin-bottom:6px}.kikyo-section{background:white;border:1px solid #e7e2ef;border-radius:22px;padding:23px;margin:20px 0;scroll-margin-top:15px}.kikyo-section h2{font-size:18px;margin:0 0 15px}.kikyo-section h2>span{font-size:12px;color:#81798e;margin-left:8px}.home-map,.home-revisit{border-color:#e7e2ef;color:#39334e}.home-map-number{background:#f0eafa;color:#7060aa}.home-revisit{border-left-color:#aa96d1}.home-map-text .home-area-label,.home-arrow,.home-map-heading button{color:#81729d}.home-empty{border-color:#e1d6ee;color:#81798e;background:#fcfbfe}.home-month-summary{background:#f0eafa}.home-month input{border-color:#e4dcef;color:#514482}.kikyo-links{margin-top:25px}.kikyo-links .congregation-site{display:block;margin-top:12px}.home-settings{margin-top:18px}#personalHome button:focus-visible,#personalHome a:focus-visible{outline-color:#a28acb}
@@ -222,11 +222,12 @@ border-radius:6px;padding:8px;font-size:13px;font-weight:600;}
 <button id="btnMenuHelp" type="button" title="アイコンの使い方" aria-label="アイコンの使い方" aria-haspopup="dialog">？</button>
 </div>
 <details class="legend"><summary>記号の説明</summary>
-<span class="dot" style="background:#f5b400"></span>会えた<br>
-<span class="dot" style="background:#1f6feb"></span>再訪問<br>
-<span class="dot" style="background:#2ea043"></span>投函<br>
-<span class="dot" style="background:#d9333f"></span>訪問しない<br>
-<span class="dot" style="background:#9E9E9E"></span>留守<br>
+<span class="location-symbol" aria-hidden="true"></span>現在地<br>
+<span class="visit-pin" data-status="met" aria-hidden="true">✓</span>会えた<br>
+<span class="visit-pin" data-status="revisit" aria-hidden="true">↻</span>再訪問<br>
+<span class="visit-pin" data-status="posted" aria-hidden="true">✉</span>投函<br>
+<span class="visit-pin" data-status="away" aria-hidden="true">−</span>留守<br>
+<span class="visit-pin" data-status="dnc" aria-hidden="true">×</span>訪問しない<br>
 🚫 訪問しない（共有）
 </details>
 
@@ -333,6 +334,7 @@ dnc:{label:"訪問しない", color:"#d9333f"},
 away:{label:"留守", color:"#9E9E9E"}
 };
 const ORDER = ["met","revisit","posted","away"];
+const VISIT_SYMBOLS = {met:'✓',revisit:'↻',posted:'✉',away:'−',dnc:'×',unmarked:''};
 
 
 // ====== 全体図（?t=all）／各区域画面の振り分け ======
@@ -432,7 +434,7 @@ let addMode = false;
 let meMarker = null;
 
 function load(){ try{const raw=localStorage.getItem(TERR_ID);if(raw===null)return [];App.validateEntry(TERR_ID,raw);return JSON.parse(raw);}catch(e){alert('戸建ての保存記録を読み込めませんでした。元の記録は保持しています。全記録のバックアップを確認してください。');return [];} }
-function save(){ App.store(TERR_ID, JSON.stringify(houses)); updateCount(); showRevisit(); }
+function save(next=houses){ App.store(TERR_ID, JSON.stringify(next)); houses=next; updateCount(); showRevisit(); }
 function updateCount(){ document.getElementById('count').textContent = '登録 '+Records.entries().length+'件'; }
 
 // ---- マーカー描画 ----
@@ -441,39 +443,48 @@ Records.register('houses',()=>houses.map((h,i)=>({...h,kind:'house',title:'家 '
   map.setView([h.lat,h.lng],18);
   const marker=layer.getLayers()[houses.findIndex(x=>x.id===h.id)];if(marker)marker.openPopup();
 },()=>{houses=load();render();showRevisit();if(sheet.style.display==='flex')renderList();});
-function pinIcon(color){
-return L.divIcon({className:"",html:'<div class="house-pin" style="background:'+color+'"></div>',iconSize:[18,18],iconAnchor:[9,9]});
+function pinIcon(status){
+const key=Object.hasOwn(VISIT_SYMBOLS,status)?status:'unmarked';
+return L.divIcon({className:'',html:'<span class="visit-pin" data-status="'+key+'" aria-hidden="true">'+VISIT_SYMBOLS[key]+'</span>',iconSize:[30,34],iconAnchor:[15,32],popupAnchor:[0,-28]});
+}
+function addHouseMarker(h, draft=false){
+const m = L.marker([h.lat,h.lng],{icon:pinIcon(h.status),title:'訪問記録'}).addTo(layer);
+m.bindPopup(function(){return popupHtml(h);},{closeButton:true,className:'house-visit-popup'});
+m.on('popupopen',function(e){bindPopup(e.popup, h, m);});
+if(draft)m.on('popupclose',()=>setTimeout(()=>{
+  if(!houses.includes(h))layer.removeLayer(m);
+},0));
+return m;
 }
 function render(){
 layer.clearLayers();
-houses.forEach(function(h){
-const m = L.marker([h.lat,h.lng],{icon:pinIcon((STATUSES[h.status]||{color:'#999'}).color)}).addTo(layer);
-m.bindPopup(function(){return popupHtml(h);},{closeButton:true,className:'house-visit-popup'});
-m.on('popupopen',function(e){bindPopup(e.popup, h, m);});
-});
+houses.forEach(h=>addHouseMarker(h));
 updateCount();
 }
 function popupHtml(h){
 const d = document.createElement('div'); d.className="lp";
 d.innerHTML = '<h4>訪問記録</h4>'+
 '<p class="record-prompt">訪問の状態を選んで記録します（この端末のみ）</p>'+
-'<div class="sts">'+ORDER.map(function(s){return '<button data-s="'+s+'" aria-pressed="'+(h.status===s)+'">'+STATUSES[s].label+'</button>';}).join('')+'</div>'+
+'<div class="sts">'+ORDER.map(function(s){return '<button data-s="'+s+'" aria-pressed="'+(h.status===s)+'"><span class="visit-symbol" aria-hidden="true">'+VISIT_SYMBOLS[s]+'</span>'+STATUSES[s].label+'</button>';}).join('')+'</div>'+
 '<textarea '+(h.status==='dnc'?'hidden ':'')+'aria-label="訪問メモ" placeholder="訪問メモ">'+App.escape(h.memo||'')+'</textarea>'+
 '<a class="gmap visit-report" href="'+REQUEST_LEDGER+'?t='+encodeURIComponent(Territory.id(TPARAM))+'&lat='+h.lat+'&lng='+h.lng+'" target="_blank" rel="noopener noreferrer">🚫 訪問してほしくないと報告する</a>'+
 '<a class="gmap" href="https://www.google.com/maps/dir/?api=1&destination='+h.lat+','+h.lng+'&travelmode=driving" target="_blank" rel="noopener">🗺️ Googleマップで経路案内</a>'+
-'<div class="row"><span class="date">'+App.escape(h.date||'')+'</span><button class="del">削除</button></div>';
+'<div class="row"'+(houses.includes(h)?'':' hidden')+'><span class="date">'+App.escape(h.date||'')+'</span><button class="del">削除</button></div>';
 return d;
 }
 function bindPopup(popup, h, marker){
 const el = popup.getElement();
 el.querySelectorAll('.sts button').forEach(function(b){b.onclick=function(){
-h.status=b.dataset.s; h.date=today(); h.sharedUpdated=Date.now(); save();
+const previous={status:h.status,date:h.date,sharedUpdated:h.sharedUpdated};
+h.status=b.dataset.s; h.date=today(); h.sharedUpdated=Date.now();
+try{save(houses.includes(h)?houses:[...houses,h]);}catch{Object.assign(h,previous);return;}
 el.querySelector('textarea').hidden=h.status==='dnc';
-marker.setIcon(pinIcon(STATUSES[h.status].color));
+marker.setIcon(pinIcon(h.status));
 el.querySelectorAll('.sts button').forEach(function(x){x.setAttribute('aria-pressed',String(x===b));});
 el.querySelector('.date').textContent=h.date;
+el.querySelector('.row').hidden=false;
 };});
-el.querySelector('textarea').oninput=function(e){h.memo=e.target.value; save();};
+el.querySelector('textarea').oninput=function(e){h.memo=e.target.value;if(houses.includes(h))save();};
 el.querySelector('.del').onclick=function(){
 houses=houses.filter(function(x){return x.id!==h.id;}); save(); render(); map.closePopup();
 };
@@ -488,8 +499,7 @@ document.getElementById('hint').style.display=addMode?'block':'none';
 map.on('click',function(e){
 if(App.mode!=='btnAdd') return;
 const h={id:Date.now(), lat:e.latlng.lat, lng:e.latlng.lng, status:"", memo:"", date:""};
-houses.push(h); save(); render();
-const m=layer.getLayers().slice(-1)[0]; if(m) m.openPopup();
+addHouseMarker(h,true).openPopup();
 });
 
 document.getElementById('btnLoc').onclick=function(){
@@ -499,7 +509,7 @@ btn.textContent='⏳';
 navigator.geolocation.getCurrentPosition(function(p){
 const ll=[p.coords.latitude,p.coords.longitude];
 if(!meMarker){
-meMarker=L.circleMarker(ll,{radius:8,color:'#fff',weight:3,fillColor:'#1f6feb',fillOpacity:1}).addTo(map);
+meMarker=L.circleMarker(ll,{radius:8,color:'#99c8ff',weight:5,fillColor:'#1768d0',fillOpacity:1,interactive:false}).addTo(map);
 } else meMarker.setLatLng(ll);
 map.setView(ll,18); btn.textContent='📍';
 },function(err){alert('現在地を取得できませんでした');btn.textContent='📍';},{enableHighAccuracy:true,timeout:8000});
