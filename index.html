@@ -458,8 +458,8 @@ const d = document.createElement('div'); d.className="lp";
 d.innerHTML = '<h4>訪問記録</h4>'+
 '<p class="record-prompt">訪問の状態を選んで記録します（この端末のみ）</p>'+
 '<div class="sts">'+ORDER.map(function(s){return '<button data-s="'+s+'" aria-pressed="'+(h.status===s)+'">'+STATUSES[s].label+'</button>';}).join('')+'</div>'+
+'<textarea '+(h.status==='dnc'?'hidden ':'')+'aria-label="訪問メモ" placeholder="訪問メモ">'+App.escape(h.memo||'')+'</textarea>'+
 '<a class="gmap" href="'+REQUEST_LEDGER+'?t='+encodeURIComponent(Territory.id(TPARAM))+'&lat='+h.lat+'&lng='+h.lng+'" target="_blank" rel="noopener noreferrer">🚫 訪問してほしくないと報告する</a>'+
-'<textarea '+(h.status==='dnc'?'hidden ':'')+'aria-label="訪問メモ" placeholder="メモ">'+App.escape(h.memo||'')+'</textarea>'+
 '<a class="gmap" href="https://www.google.com/maps/dir/?api=1&destination='+h.lat+','+h.lng+'&travelmode=driving" target="_blank" rel="noopener">🗺️ Googleマップで経路案内</a>'+
 '<div class="row"><span class="date">'+App.escape(h.date||'')+'</span><button class="del">削除</button></div>';
 return d;

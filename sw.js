@@ -1,6 +1,6 @@
 /* Cache only app files, explicitly saved map tiles, and public map metadata. */
 importScripts('./offline-core.js');
-const VERSION='territory-shell-20261111-visit-buttons',META='territory-offline-meta-v1',PREFIX='territory-map-v1-';
+const VERSION='territory-shell-20261111-visit-memo',META='territory-offline-meta-v1',PREFIX='territory-map-v1-';
 const ROOT=new URL('./',self.location.href).href;
 const FILES=['./','app-icon.svg','app-icon-180.png','index.html','improvements.css','territories.js','app-core.js','backup-crypto.js','personal-cloud.js','recovery-qr.js','records.js','personal.js','qr-reader.js','qr-decoder.js','public-visits.js','inline-share.js','offline.js','offline-core.js','offline.css','vendor/leaflet/leaflet.js','vendor/leaflet/images/layers.png','vendor/leaflet/images/layers-2x.png','vendor/leaflet/images/marker-icon.png','vendor/leaflet/images/marker-icon-2x.png','vendor/leaflet/images/marker-shadow.png'];
 const ASSETS=new Set(FILES.map(p=>new URL(p,ROOT).pathname));
