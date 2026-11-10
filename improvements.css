@@ -84,6 +84,16 @@
 .lp .sts {display:grid;grid-template-columns:repeat(2,minmax(0,1fr));}
 .lp .sts button {min-height:40px;}
 .lp .sts button.on[data-s="met"] {color:#4f3700;}
+/* Keep visit entry usable on short screens without shrinking the controls. */
+.leaflet-popup-pane {z-index:1100;}
+body:has(.leaflet-popup) .toolbar,body:has(.leaflet-popup) .legend,body:has(.leaflet-popup) .svc-pill {visibility:hidden;}
+.leaflet-popup {max-width:calc(100vw - 24px);}
+.leaflet-popup-content {max-width:calc(100vw - 72px);max-height:calc(100vh - 220px);max-height:min(480px,calc(100dvh - 220px));overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;overflow-wrap:anywhere;}
+.leaflet-popup-content .lp {min-width:0;}
+.leaflet-popup-content .lp h4 {padding-right:24px;}
+.leaflet-container a.leaflet-popup-close-button {width:40px;height:40px;line-height:40px;font-size:28px;color:#59616c;background:#f1f4f7;border-radius:50%;top:3px;right:3px;z-index:2;}
+.leaflet-popup-content .lp textarea {max-height:120px;}
+@media(max-height:500px){.leaflet-popup-content {max-height:max(60px,calc(100vh - 240px));max-height:max(60px,calc(100dvh - 240px));}.leaflet-popup-content p {margin-top:6px;margin-bottom:6px;}}
 .done-sub {white-space:pre-line;line-height:1.8;}
 .done-review {margin-top:16px;width:100%;min-height:44px;border:1px solid #b8d3c1;border-radius:10px;background:#f2f8f4;color:#24503a;font-size:14px;cursor:pointer;}
 .done-card .close {margin-top:9px;}
