@@ -94,6 +94,20 @@ body:has(.leaflet-popup) .toolbar,body:has(.leaflet-popup) .legend,body:has(.lea
 .leaflet-container a.leaflet-popup-close-button {width:40px;height:40px;line-height:40px;font-size:28px;color:#59616c;background:#f1f4f7;border-radius:50%;top:3px;right:3px;z-index:2;}
 .leaflet-popup-content .lp textarea {max-height:120px;}
 @media(max-height:500px){.leaflet-popup-content {max-height:max(60px,calc(100vh - 240px));max-height:max(60px,calc(100dvh - 240px));}.leaflet-popup-content p {margin-top:6px;margin-bottom:6px;}}
+.house-visit-popup .leaflet-popup-content {margin:10px 12px 8px;max-width:min(216px,calc(100vw - 48px));}
+.house-visit-popup .lp h4 {min-height:34px;margin:0;line-height:30px;padding-right:38px;}
+.house-visit-popup .lp .record-prompt {margin:0 0 5px;line-height:1.35;}
+.house-visit-popup .lp .sts {gap:5px;margin-bottom:5px;}
+.house-visit-popup .lp .sts button {position:relative;min-width:0;min-height:44px;border:2px solid transparent;padding:4px 16px;font-size:17px;font-weight:700;line-height:1.2;}
+.house-visit-popup .sts button[data-s="met"] {background:#f5b400;color:#342500;}
+.house-visit-popup .sts button[data-s="revisit"] {background:#1856bd;color:#fff;}
+.house-visit-popup .sts button[data-s="posted"] {background:#237837;color:#fff;}
+.house-visit-popup .sts button[data-s="away"] {background:#d5d7db;color:#20252b;}
+.house-visit-popup .sts button[aria-pressed="true"] {border-color:currentColor;box-shadow:inset 0 0 0 1px currentColor;}
+.house-visit-popup .sts button[aria-pressed="true"]::before {content:'✓';position:absolute;left:4px;top:50%;transform:translateY(-50%);font-size:14px;}
+.house-visit-popup .lp .gmap {margin-top:4px;padding:6px;}
+.house-visit-popup .lp textarea {display:block;margin-top:4px;min-height:36px;}
+.house-visit-popup .lp .row {margin-top:2px;}
 .done-sub {white-space:pre-line;line-height:1.8;}
 .done-review {margin-top:16px;width:100%;min-height:44px;border:1px solid #b8d3c1;border-radius:10px;background:#f2f8f4;color:#24503a;font-size:14px;cursor:pointer;}
 .done-card .close {margin-top:9px;}

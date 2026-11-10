@@ -112,7 +112,7 @@ border-radius:6px;padding:8px;font-size:13px;font-weight:600;}
 .dnc-pin{width:24px;height:24px;border-radius:50%;background:#fff;border:2px solid #b23b3b;display:flex;align-items:center;justify-content:center;font-size:13px;box-shadow:0 1px 4px rgba(0,0,0,.4);}
 .toolbar button#btnDnc.active{background:#b23b3b;color:#fff;}
 </style>
-<link rel="stylesheet" href="improvements.css?v=20261108-record-fit4">
+<link rel="stylesheet" href="improvements.css?v=20261111-visit-buttons">
 <style>
 /* Kikyo personal dashboard: retain data and map status colors. */
 :root{--blue:#7060aa;--bar:#514482}body.home-view{background:#fcfbfe}.home-view header{background:#fff;color:#514482;border-bottom:1px solid #e7e2ef}.home-view header .no{background:#eee7fa;color:#7060aa}.home-view header .name{font-weight:700}#personalHome{background:#fcfbfe;color:#39334e}.home-content{max-width:1000px;padding-top:30px}.home-intro{margin-bottom:24px}.home-subtitle{font-size:13px;color:#81798e;margin:10px 0 0}.home-browse{background:#7060aa;border:0;border-bottom:4px solid #514482;color:#fff;border-radius:14px;padding:14px 20px;font-weight:700}.kikyo-welcome{display:flex;justify-content:space-between;align-items:center;height:185px;padding:24px 30px;border:1px solid #e1d6f2;border-radius:24px;background:#f0eafb;overflow:hidden;margin-bottom:22px}.kikyo-welcome>div{z-index:1}.kikyo-welcome span{font-size:11px;color:#7060aa;letter-spacing:2px}.kikyo-welcome h2{font-size:24px;margin:12px 0}.kikyo-welcome p{font-size:12px;color:#81798e;line-height:1.8}.kikyo-welcome svg{height:205px;width:240px;align-self:flex-end;margin-bottom:-24px}.home-summary{gap:16px;margin-bottom:25px}.home-summary button,.home-summary button+button{background:#fff;border:1px solid #e4dcef;border-bottom:3px solid #e1d6ee;border-radius:20px;color:#7060aa;padding:23px}.home-summary button>span{color:#81798e}.home-summary strong{font-size:29px}.home-summary small{font-size:11px}.home-search input{border-color:#e4dcef;border-radius:13px;margin-bottom:6px}.kikyo-section{background:white;border:1px solid #e7e2ef;border-radius:22px;padding:23px;margin:20px 0;scroll-margin-top:15px}.kikyo-section h2{font-size:18px;margin:0 0 15px}.kikyo-section h2>span{font-size:12px;color:#81798e;margin-left:8px}.home-map,.home-revisit{border-color:#e7e2ef;color:#39334e}.home-map-number{background:#f0eafa;color:#7060aa}.home-revisit{border-left-color:#aa96d1}.home-map-text .home-area-label,.home-arrow,.home-map-heading button{color:#81729d}.home-empty{border-color:#e1d6ee;color:#81798e;background:#fcfbfe}.home-month-summary{background:#f0eafa}.home-month input{border-color:#e4dcef;color:#514482}.kikyo-links{margin-top:25px}.kikyo-links .congregation-site{display:block;margin-top:12px}.home-settings{margin-top:18px}#personalHome button:focus-visible,#personalHome a:focus-visible{outline-color:#a28acb}
@@ -448,7 +448,7 @@ function render(){
 layer.clearLayers();
 houses.forEach(function(h){
 const m = L.marker([h.lat,h.lng],{icon:pinIcon((STATUSES[h.status]||{color:'#999'}).color)}).addTo(layer);
-m.bindPopup(function(){return popupHtml(h);},{closeButton:true});
+m.bindPopup(function(){return popupHtml(h);},{closeButton:true,className:'house-visit-popup'});
 m.on('popupopen',function(e){bindPopup(e.popup, h, m);});
 });
 updateCount();
@@ -457,7 +457,7 @@ function popupHtml(h){
 const d = document.createElement('div'); d.className="lp";
 d.innerHTML = '<h4>訪問記録</h4>'+
 '<p class="record-prompt">訪問の状態を選んで記録します（この端末のみ）</p>'+
-'<div class="sts">'+ORDER.map(function(s){return '<button data-s="'+s+'" aria-pressed="'+(h.status===s)+'" class="'+(h.status===s?'on':'')+'" style="'+(h.status===s?'background:'+STATUSES[s].color:'')+'">'+STATUSES[s].label+'</button>';}).join('')+'</div>'+
+'<div class="sts">'+ORDER.map(function(s){return '<button data-s="'+s+'" aria-pressed="'+(h.status===s)+'">'+STATUSES[s].label+'</button>';}).join('')+'</div>'+
 '<a class="gmap" href="'+REQUEST_LEDGER+'?t='+encodeURIComponent(Territory.id(TPARAM))+'&lat='+h.lat+'&lng='+h.lng+'" target="_blank" rel="noopener noreferrer">🚫 訪問してほしくないと報告する</a>'+
 '<textarea '+(h.status==='dnc'?'hidden ':'')+'aria-label="訪問メモ" placeholder="メモ">'+App.escape(h.memo||'')+'</textarea>'+
 '<a class="gmap" href="https://www.google.com/maps/dir/?api=1&destination='+h.lat+','+h.lng+'&travelmode=driving" target="_blank" rel="noopener">🗺️ Googleマップで経路案内</a>'+
@@ -470,8 +470,7 @@ el.querySelectorAll('.sts button').forEach(function(b){b.onclick=function(){
 h.status=b.dataset.s; h.date=today(); h.sharedUpdated=Date.now(); save();
 el.querySelector('textarea').hidden=h.status==='dnc';
 marker.setIcon(pinIcon(STATUSES[h.status].color));
-el.querySelectorAll('.sts button').forEach(function(x){x.classList.remove('on');x.style.background='';x.setAttribute('aria-pressed','false');});
-b.classList.add('on'); b.style.background=STATUSES[h.status].color;b.setAttribute('aria-pressed','true');
+el.querySelectorAll('.sts button').forEach(function(x){x.setAttribute('aria-pressed',String(x===b));});
 el.querySelector('.date').textContent=h.date;
 };});
 el.querySelector('textarea').oninput=function(e){h.memo=e.target.value; save();};
