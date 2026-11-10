@@ -108,6 +108,7 @@ body:has(.leaflet-popup) .toolbar,body:has(.leaflet-popup) .legend,body:has(.lea
 .house-visit-popup .lp .gmap {margin-top:4px;padding:6px;}
 .house-visit-popup .lp textarea {display:block;margin-top:4px;min-height:36px;}
 .house-visit-popup .lp .row {margin-top:2px;}
+.house-visit-popup .lp .del {min-width:72px;min-height:44px;margin-left:auto;padding:6px 12px;font-size:17px;font-weight:700;color:#a12430;background:#fff3f3;border:1px solid #e5b2b7;border-radius:8px;}
 .done-sub {white-space:pre-line;line-height:1.8;}
 .done-review {margin-top:16px;width:100%;min-height:44px;border:1px solid #b8d3c1;border-radius:10px;background:#f2f8f4;color:#24503a;font-size:14px;cursor:pointer;}
 .done-card .close {margin-top:9px;}
