@@ -117,7 +117,6 @@ body:has(.leaflet-popup) .toolbar,body:has(.leaflet-popup) .legend,body:has(.lea
 .visit-pin[data-status="revisit"] {--pin-fill:#1856bd;}
 .visit-pin[data-status="posted"] {--pin-fill:#70429b;}
 .visit-pin[data-status="away"] {--pin-fill:#6b7079;}
-.visit-pin[data-status="dnc"] {--pin-fill:#b72c3b;}
 .legend .visit-pin {transform:scale(.7);vertical-align:middle;margin-right:4px;height:24px;}
 .location-symbol {display:inline-block;width:16px;height:16px;margin:0 11px 0 7px;vertical-align:middle;border:3px solid #99c8ff;border-radius:50%;background:#1768d0;}
 .house-visit-popup .lp .sts button {padding-left:16px;padding-right:5px;}

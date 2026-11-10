@@ -112,7 +112,7 @@ border-radius:6px;padding:8px;font-size:13px;font-weight:600;}
 .dnc-pin{width:24px;height:24px;border-radius:50%;background:#fff;border:2px solid #b23b3b;display:flex;align-items:center;justify-content:center;font-size:13px;box-shadow:0 1px 4px rgba(0,0,0,.4);}
 .toolbar button#btnDnc.active{background:#b23b3b;color:#fff;}
 </style>
-<link rel="stylesheet" href="improvements.css?v=20261111-visit-pins">
+<link rel="stylesheet" href="improvements.css?v=20261111-visit-symbols">
 <style>
 /* Kikyo personal dashboard: retain data and map status colors. */
 :root{--blue:#7060aa;--bar:#514482}body.home-view{background:#fcfbfe}.home-view header{background:#fff;color:#514482;border-bottom:1px solid #e7e2ef}.home-view header .no{background:#eee7fa;color:#7060aa}.home-view header .name{font-weight:700}#personalHome{background:#fcfbfe;color:#39334e}.home-content{max-width:1000px;padding-top:30px}.home-intro{margin-bottom:24px}.home-subtitle{font-size:13px;color:#81798e;margin:10px 0 0}.home-browse{background:#7060aa;border:0;border-bottom:4px solid #514482;color:#fff;border-radius:14px;padding:14px 20px;font-weight:700}.kikyo-welcome{display:flex;justify-content:space-between;align-items:center;height:185px;padding:24px 30px;border:1px solid #e1d6f2;border-radius:24px;background:#f0eafb;overflow:hidden;margin-bottom:22px}.kikyo-welcome>div{z-index:1}.kikyo-welcome span{font-size:11px;color:#7060aa;letter-spacing:2px}.kikyo-welcome h2{font-size:24px;margin:12px 0}.kikyo-welcome p{font-size:12px;color:#81798e;line-height:1.8}.kikyo-welcome svg{height:205px;width:240px;align-self:flex-end;margin-bottom:-24px}.home-summary{gap:16px;margin-bottom:25px}.home-summary button,.home-summary button+button{background:#fff;border:1px solid #e4dcef;border-bottom:3px solid #e1d6ee;border-radius:20px;color:#7060aa;padding:23px}.home-summary button>span{color:#81798e}.home-summary strong{font-size:29px}.home-summary small{font-size:11px}.home-search input{border-color:#e4dcef;border-radius:13px;margin-bottom:6px}.kikyo-section{background:white;border:1px solid #e7e2ef;border-radius:22px;padding:23px;margin:20px 0;scroll-margin-top:15px}.kikyo-section h2{font-size:18px;margin:0 0 15px}.kikyo-section h2>span{font-size:12px;color:#81798e;margin-left:8px}.home-map,.home-revisit{border-color:#e7e2ef;color:#39334e}.home-map-number{background:#f0eafa;color:#7060aa}.home-revisit{border-left-color:#aa96d1}.home-map-text .home-area-label,.home-arrow,.home-map-heading button{color:#81729d}.home-empty{border-color:#e1d6ee;color:#81798e;background:#fcfbfe}.home-month-summary{background:#f0eafa}.home-month input{border-color:#e4dcef;color:#514482}.kikyo-links{margin-top:25px}.kikyo-links .congregation-site{display:block;margin-top:12px}.home-settings{margin-top:18px}#personalHome button:focus-visible,#personalHome a:focus-visible{outline-color:#a28acb}
@@ -227,8 +227,7 @@ border-radius:6px;padding:8px;font-size:13px;font-weight:600;}
 <span class="visit-pin" data-status="revisit" aria-hidden="true">↻</span>再訪問<br>
 <span class="visit-pin" data-status="posted" aria-hidden="true">✉</span>投函<br>
 <span class="visit-pin" data-status="away" aria-hidden="true">−</span>留守<br>
-<span class="visit-pin" data-status="dnc" aria-hidden="true">×</span>訪問しない<br>
-🚫 訪問しない（共有）
+🚫 訪問しない
 </details>
 
 <div class="sheet" id="sheet">
@@ -334,7 +333,7 @@ dnc:{label:"訪問しない", color:"#d9333f"},
 away:{label:"留守", color:"#9E9E9E"}
 };
 const ORDER = ["met","revisit","posted","away"];
-const VISIT_SYMBOLS = {met:'✓',revisit:'↻',posted:'✉',away:'−',dnc:'×',unmarked:''};
+const VISIT_SYMBOLS = {met:'✓',revisit:'↻',posted:'✉',away:'−',unmarked:''};
 
 
 // ====== 全体図（?t=all）／各区域画面の振り分け ======
@@ -444,6 +443,7 @@ Records.register('houses',()=>houses.map((h,i)=>({...h,kind:'house',title:'家 '
   const marker=layer.getLayers()[houses.findIndex(x=>x.id===h.id)];if(marker)marker.openPopup();
 },()=>{houses=load();render();showRevisit();if(sheet.style.display==='flex')renderList();});
 function pinIcon(status){
+if(status==='dnc')return L.divIcon({className:'',html:'<div class="dnc-pin" aria-hidden="true">🚫</div>',iconSize:[24,24],iconAnchor:[12,12],popupAnchor:[0,-12]});
 const key=Object.hasOwn(VISIT_SYMBOLS,status)?status:'unmarked';
 return L.divIcon({className:'',html:'<span class="visit-pin" data-status="'+key+'" aria-hidden="true">'+VISIT_SYMBOLS[key]+'</span>',iconSize:[30,34],iconAnchor:[15,32],popupAnchor:[0,-28]});
 }
