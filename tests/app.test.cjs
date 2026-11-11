@@ -46,7 +46,7 @@ function app(t='4',sharedCSV='区域番号,建物ID,緯度,経度,建物名,部�
  const bounds={extend(){return this}};
  function obj(ll){return {ll,handlers:{},on(name,f){this.handlers[name]=f;return this},addTo(g){if(g.items)g.items.push(this);return this},getBounds:()=>bounds,getLatLng:()=>({lat:ll[0],lng:ll[1]}),setLatLng(){},setIcon(){},bindPopup(f){this.popup=f;return this},openPopup(){this.opened=true;},getCenter:()=>({lat:34,lng:136})};}
  const L={__ap:0,map(){const m=obj([34,136]);m.handlers={};m.on=function(n,f){(this.handlers[n]||=[]).push(f);return this};m.emit=(n,e)=>{for(const f of m.handlers[n]||[])f(e)};m.setView=()=>m;m.fitBounds=()=>m;m.invalidateSize=()=>{};m.closePopup=()=>{};m.items=[];maps.push(m);return m},control:{zoom:()=>({addTo(){document.getElementById('map').insertAdjacentHTML('beforeend','<div class="leaflet-top leaflet-right"></div>');}})},tileLayer:()=>({addTo(){}}),polygon:()=>obj([34,136]),marker:obj,circleMarker:obj,divIcon:o=>o,layerGroup(){const g={items:[],addTo(m){m.items.push(this);return this},clearLayers(){this.items=[]},getLayers(){return this.items}};return g}};
- const events={};const context={document,localStorage,L,URLSearchParams,Date,Set,Map,AbortController,Blob,URL,console,navigator:{clipboard:{writeText:async s=>context.copied=s}},location:{search:t===null?'':'?t='+t,hash,reload:()=>context.reloaded=true},alert:s=>alerts.push(s),confirm:()=>true,prompt:()=>null,setInterval:()=>0,clearInterval(){},setTimeout:()=>0,clearTimeout(){},addEventListener:(n,f)=>events[n]=f};
+ const events={};const context={TextEncoder,TextDecoder,crypto:require("node:crypto").webcrypto,document,localStorage,L,URLSearchParams,Date,Set,Map,AbortController,Blob,URL,console,navigator:{clipboard:{writeText:async s=>context.copied=s}},location:{search:t===null?'':'?t='+t,hash,reload:()=>context.reloaded=true},alert:s=>alerts.push(s),confirm:()=>true,prompt:()=>null,setInterval:()=>0,clearInterval(){},setTimeout:()=>0,clearTimeout(){},addEventListener:(n,f)=>events[n]=f};
  context.fetch=async url=>({ok:true,text:async()=>url.includes('2125994133')?sharedCSV:url.includes('852025746')?'区域番号,状態\n4,使用中':'t,lat,lng,kind,memo\n4,34.647,136.118,dnc,"注意,メモ"'});
  context.window=context;vm.createContext(context);
  const add=document.addEventListener.bind(document);document.addEventListener=(n,f)=>{if(n==='DOMContentLoaded')domReady=f;else add(n,f)};
@@ -312,3 +312,28 @@ test('service history moved to home can delete one entry without changing visits
  a.context.confirm=()=>true;button.click();assert.equal(JSON.parse(a.data.get('svc-log')).length,1);
  assert.equal(a.data.get('terr-4'),visits);assert.equal(a.document.querySelectorAll('.home-service-row').length,1);
 });
+
+test('room picker opens without writing, saves explicitly, and preserves records on failed save',async()=>{
+ const saved={'terr-4-apt':JSON.stringify([{id:123,lat:34.647,lng:136.118,name:'試験棟',rooms:[{no:'101',status:'revisit',date:'2026-09-17'},{no:'102',status:'dnc',date:'2026-09-18'}]}])};
+ for(const shared of [false,true]){
+ const csv=shared?'区域番号,建物ID,緯度,経度,建物名,部屋番号\n4,local-123,34.647,136.118,共有名,"101,102"':'区域番号,建物ID,緯度,経度,建物名,部屋番号';
+ const a=app('4',csv,saved);await a.flush();const g=a.maps[0].items.find(g=>g.items && g.items.some(m=>m.handlers.click));g.items[0].handlers.click();
+ const before=Object.fromEntries(a.data);
+ assert.ok(a.document.querySelector('.room-editor').hidden);
+ a.document.querySelector('.room-select').click();
+ assert.equal(a.document.querySelector('.room-editor').hidden,false);
+ assert.deepEqual(Object.fromEntries(a.data),before);
+ a.document.querySelector('.room-close').click();assert.deepEqual(Object.fromEntries(a.data),before);
+ a.document.querySelector('.room-select').click();
+ a.failOnce(shared?'terr-4-shared-records':'terr-4-apt');
+ a.document.querySelector('#roomBody button[aria-label="101 会えた"]').click();
+ assert.deepEqual(Object.fromEntries(a.data),before);
+ assert.match(a.alerts.at(-1),/保存できません/);
+ a.document.querySelector('#roomBody button[aria-label="101 会えた"]').click();
+ assert.match(a.document.getElementById('roomSaved').textContent,/101.*会えた/);
+ assert.ok(a.document.querySelector('.room-editor').hidden);
+ a.document.querySelector('.room-select').click();a.document.querySelector('#roomBody button[aria-label="101 会えた"]').click();
+ const snapshot=a.context.inlineApartmentSnapshot()[0];assert.equal(snapshot.rooms[0].status,'met');assert.equal(snapshot.rooms[1].status,'dnc');assert.equal(snapshot.rooms[1].date,'2026-09-18');
+ }
+});
+

@@ -112,7 +112,7 @@ border-radius:6px;padding:8px;font-size:13px;font-weight:600;}
 .dnc-pin{width:24px;height:24px;border-radius:50%;background:#fff;border:2px solid #b23b3b;display:flex;align-items:center;justify-content:center;font-size:13px;box-shadow:0 1px 4px rgba(0,0,0,.4);}
 .toolbar button#btnDnc.active{background:#b23b3b;color:#fff;}
 </style>
-<link rel="stylesheet" href="improvements.css?v=20261111-visit-symbols">
+<link rel="stylesheet" href="improvements.css?v=20261111-room-picker">
 <style>
 /* Kikyo personal dashboard: retain data and map status colors. */
 :root{--blue:#7060aa;--bar:#514482}body.home-view{background:#fcfbfe}.home-view header{background:#fff;color:#514482;border-bottom:1px solid #e7e2ef}.home-view header .no{background:#eee7fa;color:#7060aa}.home-view header .name{font-weight:700}#personalHome{background:#fcfbfe;color:#39334e}.home-content{max-width:1000px;padding-top:30px}.home-intro{margin-bottom:24px}.home-subtitle{font-size:13px;color:#81798e;margin:10px 0 0}.home-browse{background:#7060aa;border:0;border-bottom:4px solid #514482;color:#fff;border-radius:14px;padding:14px 20px;font-weight:700}.kikyo-welcome{display:flex;justify-content:space-between;align-items:center;height:185px;padding:24px 30px;border:1px solid #e1d6f2;border-radius:24px;background:#f0eafb;overflow:hidden;margin-bottom:22px}.kikyo-welcome>div{z-index:1}.kikyo-welcome span{font-size:11px;color:#7060aa;letter-spacing:2px}.kikyo-welcome h2{font-size:24px;margin:12px 0}.kikyo-welcome p{font-size:12px;color:#81798e;line-height:1.8}.kikyo-welcome svg{height:205px;width:240px;align-self:flex-end;margin-bottom:-24px}.home-summary{gap:16px;margin-bottom:25px}.home-summary button,.home-summary button+button{background:#fff;border:1px solid #e4dcef;border-bottom:3px solid #e1d6ee;border-radius:20px;color:#7060aa;padding:23px}.home-summary button>span{color:#81798e}.home-summary strong{font-size:29px}.home-summary small{font-size:11px}.home-search input{border-color:#e4dcef;border-radius:13px;margin-bottom:6px}.kikyo-section{background:white;border:1px solid #e7e2ef;border-radius:22px;padding:23px;margin:20px 0;scroll-margin-top:15px}.kikyo-section h2{font-size:18px;margin:0 0 15px}.kikyo-section h2>span{font-size:12px;color:#81798e;margin-left:8px}.home-map,.home-revisit{border-color:#e7e2ef;color:#39334e}.home-map-number{background:#f0eafa;color:#7060aa}.home-revisit{border-left-color:#aa96d1}.home-map-text .home-area-label,.home-arrow,.home-map-heading button{color:#81729d}.home-empty{border-color:#e1d6ee;color:#81798e;background:#fcfbfe}.home-month-summary{background:#f0eafa}.home-month input{border-color:#e4dcef;color:#514482}.kikyo-links{margin-top:25px}.kikyo-links .congregation-site{display:block;margin-top:12px}.home-settings{margin-top:18px}#personalHome button:focus-visible,#personalHome a:focus-visible{outline-color:#a28acb}
@@ -289,6 +289,8 @@ border-radius:6px;padding:8px;font-size:13px;font-weight:600;}
 <input id="roomAddInput" type="text" inputmode="text" placeholder="部屋番号を入力（例：101）">
 <button id="roomAddBtn">追加</button>
 </div>
+<p class="room-help">部屋番号を押して、訪問の結果を選んでください。</p>
+<p id="roomSaved" role="status" aria-live="polite"></p>
 <div id="roomBody"></div>
 <div class="tools">
 <button id="aptExport">端末内の建物を書き出し</button>
@@ -648,6 +650,7 @@ setTimeout(function(){ map.invalidateSize(); }, 300);
  if(window.refreshVisitRecords)window.refreshVisitRecords();
  function render(){
    const a=current;if(!a)return;
+   document.getElementById('roomSaved').textContent='';
    const list=rooms(a);name.value=a.name;name.readOnly=!!a.shared;
    document.getElementById('aptPrivacy').textContent=a.shared?'建物・部屋番号：全員で共有 ／ 訪問記録：この端末のみ。建物情報の変更は担当者へ。':'建物・部屋番号・訪問記録：この端末のみ。共有用コピーには訪問記録を含めません。';
    const recorded=list.filter(r=>r.status).length;
@@ -659,13 +662,45 @@ setTimeout(function(){ map.invalidateSize(); }, 300);
    if(!list.length){body.textContent='部屋番号を入力してください。101,102 のようにまとめて追加できます。';return;}
    list.forEach(r=>{
      const row=document.createElement('div');row.className='room';
-     const number=document.createElement('span');number.className='rno';number.textContent=r.no;row.appendChild(number);
-     const buttons=document.createElement('span');buttons.className='rbtns';row.appendChild(buttons);
-     ORDER.forEach(st=>{const b=document.createElement('button');b.textContent=STATUSES[st].label;b.setAttribute('aria-label',r.no+' '+STATUSES[st].label);b.setAttribute('aria-pressed',String(r.status===st));if(r.status===st){b.className='on';b.style.background=STATUSES[st].color;}
-       b.onclick=()=>{const status=r.status===st?'':st,date=status?Records.localDay():'';
-         if(a.shared){const existing=privateRooms(a).filter(x=>roomNumber(x)!==roomNumber(r));records[a.id]=[...existing,{no:r.no,status,date,sharedUpdated:Date.now()}];saveRecords();}
-         else{const target=a.rooms.find(x=>x.no===r.no);target.status=status;target.date=date;target.sharedUpdated=Date.now();save();}render();if(window.refreshVisitRecords)window.refreshVisitRecords();};buttons.appendChild(b);});
-     if(!a.shared){const del=document.createElement('button');del.className='rdel';del.textContent='✕';del.setAttribute('aria-label',r.no+' を削除');del.onclick=()=>{if(!confirm(r.no+' を削除しますか？'))return;a.rooms=a.rooms.filter(x=>x.no!==r.no);save();render();};row.appendChild(del);}
+     const number=document.createElement('button');number.type='button';number.className='room-select';
+     const no=document.createElement('span');no.className='rno';no.textContent=r.no;number.appendChild(no);
+     const summary=document.createElement('span');summary.className='room-state';
+     summary.textContent=r.status?(r.status==='dnc'?'🚫':VISIT_SYMBOLS[r.status]||'')+' '+STATUSES[r.status].label:'未記録';
+     number.appendChild(summary);number.setAttribute('aria-expanded','false');row.appendChild(number);
+     const editor=document.createElement('div');editor.className='room-editor house-visit-popup';editor.hidden=true;row.appendChild(editor);
+     number.onclick=()=>{
+       const opening=editor.hidden;
+       body.querySelectorAll('.room-editor').forEach(el=>el.hidden=true);
+       body.querySelectorAll('.room-select').forEach(el=>el.setAttribute('aria-expanded','false'));
+       editor.hidden=!opening;number.setAttribute('aria-expanded',String(opening));
+     };
+     const title=document.createElement('p');title.className='room-editor-title';title.textContent=r.no+' の訪問記録';editor.appendChild(title);
+     const panel=document.createElement('div');panel.className='lp';editor.appendChild(panel);
+     const buttons=document.createElement('div');buttons.className='sts';panel.appendChild(buttons);
+     function record(status){
+       const date=status?Records.localDay():'',updated=Date.now();
+       try{
+         if(a.shared){
+           const next={...records,[a.id]:[...privateRooms(a).filter(x=>roomNumber(x)!==roomNumber(r)),{no:r.no,status,date,sharedUpdated:updated}]};
+           App.store(recordsKey,JSON.stringify(next));records=next;
+         }else{
+           const next=local.map(x=>x.id===a.id?{...x,rooms:x.rooms.map(room=>room.no===r.no?{...room,status,date,sharedUpdated:updated}:room)}:x);
+           App.store(key,JSON.stringify(next));local=next;current=local.find(x=>x.id===a.id);
+         }
+       }catch(e){alert('保存できませんでした。記録は変更していません。もう一度お試しください。');return;}
+       render();if(window.refreshVisitRecords)window.refreshVisitRecords();
+       const message=document.getElementById('roomSaved');message.textContent=r.no+'：'+(status?STATUSES[status].label+'で保存しました':'記録を取り消しました');
+       const selected=[...body.querySelectorAll('.room-select')].find(el=>el.querySelector('.rno').textContent===r.no);if(selected)selected.focus();
+     }
+     ORDER.forEach(st=>{
+       const b=document.createElement('button');b.type='button';b.dataset.s=st;
+       b.textContent=VISIT_SYMBOLS[st]+' '+STATUSES[st].label;b.setAttribute('aria-label',r.no+' '+STATUSES[st].label);b.setAttribute('aria-pressed',String(r.status===st));
+       b.onclick=()=>record(st);buttons.appendChild(b);
+     });
+     const close=document.createElement('button');close.type='button';close.className='room-close';close.textContent='変更せず閉じる';close.onclick=()=>{editor.hidden=true;number.setAttribute('aria-expanded','false');number.focus();};editor.appendChild(close);
+     const manage=document.createElement('details');manage.className='room-manage';const label=document.createElement('summary');label.textContent='記録・部屋の整理';manage.appendChild(label);editor.appendChild(manage);
+     if(r.status){const clear=document.createElement('button');clear.type='button';clear.textContent='この部屋の記録を取り消す';clear.onclick=()=>{if(confirm(r.no+' の訪問記録を取り消しますか？'))record('');};manage.appendChild(clear);}
+     if(!a.shared){const del=document.createElement('button');del.className='rdel';del.textContent='部屋番号を削除';del.setAttribute('aria-label',r.no+' を削除');del.onclick=()=>{if(!confirm(r.no+' を削除しますか？'))return;a.rooms=a.rooms.filter(x=>x.no!==r.no);save();render();};manage.appendChild(del);}
      body.appendChild(row);
    });
  }
@@ -779,6 +814,8 @@ if(!ISHOME && !ISALL && window.TERRITORIES[TPARAM])Records.openLinked();
 <script src="personal-cloud.js?v=20261108-backup-menu"></script>
 </body>
 </html>
+
+
 
 
 
