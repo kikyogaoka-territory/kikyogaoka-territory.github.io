@@ -249,3 +249,22 @@ body:has(.leaflet-popup) .toolbar,body:has(.leaflet-popup) .legend,body:has(.lea
 .cloud-setup {padding:16px;margin:18px 0;border:1px solid #c9bddc;border-radius:12px;background:#f6f1fd;color:#403555;}
 .cloud-setup button {min-height:50px;padding:12px;border:0;border-radius:9px;background:#7060aa;color:#fff;font-size:17px;}
 .cloud-setup p {line-height:1.6;margin:0 0 12px;}
+
+/* Room selection uses the same status palette as house records. */
+#roomBody .room{display:block;padding:6px 0}
+.room-select{width:100%;display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:60px;padding:12px 14px;border:2px solid #d8d4e1;border-radius:12px;background:#fff;color:#302a3e;text-align:left;cursor:pointer;font:inherit}
+#roomBody .rno{font-size:22px}
+.room-state{font-size:17px;font-weight:600}
+.room-select[aria-expanded="true"]{border-color:#7060aa;background:#f4f0fc}
+.room-editor{padding:12px;border:2px solid #7060aa;border-top:0;border-radius:0 0 12px 12px}
+.room-editor[hidden]{display:none}
+.room-editor-title{font-size:19px;font-weight:700;margin:0 0 12px}
+.room-editor .lp{min-width:0}
+#roomBody .sts button{min-height:54px;font-size:18px}
+.room-close,.room-manage button{min-height:44px;padding:10px;margin-top:10px;border:1px solid #ccc;border-radius:8px;background:white;font:inherit}
+.room-manage{margin-top:12px;font-size:15px}
+.room-manage summary{min-height:44px;padding:12px 0;cursor:pointer}
+.room-help,#roomSaved{font-size:16px;line-height:1.6}
+#roomSaved:empty{display:none}
+#roomBody button:focus-visible{outline:3px solid #1856bd;outline-offset:3px}
+
