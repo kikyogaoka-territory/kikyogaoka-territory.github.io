@@ -167,7 +167,7 @@ window.Personal = (() => {
     try{
       const active=App.serviceActive();button.disabled=false;button.classList.toggle('running',!!active);
       button.textContent=active?'■ 奉仕を終える':'▶ 奉仕を始める';
-      clock.textContent=active?'計測中 '+App.serviceElapsed(active.start):'再訪問・電話・手紙などの奉仕にも使えます。';
+      clock.textContent=active?'計測中 '+App.serviceElapsed(active.start):'「奉仕を始める」を押すと、奉仕時間の計測が始まります。';
       resume.hidden=!active?.terr;
       if(active?.terr){resume.href=mapLink(active.terr);resume.textContent='区域 '+Territory.number(active.terr)+' の地図に戻る →';}
     }catch(e){button.disabled=true;clock.textContent='計測中の記録を読み込めませんでした。元の記録は保持しています。';resume.hidden=true;}
